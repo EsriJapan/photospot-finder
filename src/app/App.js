@@ -225,10 +225,10 @@ class App extends Mediator {
         .offset-top {
             margin-top: 50px;
         }
-        .leaflet-esri-webmap-layer-2-label-pane > div {
-          margin-left: 0;
-          margin-top: -9px;
-          color: rgb(255,127,127);
+        div.leaflet-esri-webmap-layer2-label-pane > div.esri-leaflet-webmap-labels {
+          margin-left: 0 !important;
+          margin-top: -9px !important;
+          color: rgb(255,127,127) !important;
         }
         `}</style>
         <Navbar inverse className="fixed-nav">
