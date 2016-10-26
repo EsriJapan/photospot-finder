@@ -269,7 +269,7 @@ var App = function (_Mediator) {
         _react2.default.createElement(
           'style',
           { type: 'text/css' },
-          '\n        nav > div.container {\n          padding-right: 30px;\n        }\n        .fixed-nav {\n            position: fixed;\n            width: 100%;\n            z-index: 99998;\n        }\n        .main-contents {\n          padding-right: 0;\n          padding-left: 0;\n        }\n        .offset-top {\n            margin-top: 50px;\n        }\n        div.leaflet-esri-webmap-layer2-label-pane > div.esri-leaflet-webmap-labels {\n          margin-left: 0 !important;\n          margin-top: -9px !important;\n          color: rgb(255,127,127) !important;\n        }\n        .route-path {\n          -webkit-animation: dash 6s linear forwards;\n          animation: dash 6s linear forwards;\n        }\n        @-webkit-keyframes dash {\n          to {\n            stroke-dashoffset: 0;\n          }\n        }\n        @keyframes dash {\n          to {\n            stroke-dashoffset: 0;\n          }\n        }\n        '
+          '\n        nav > div.container {\n          padding-right: 30px;\n        }\n        .fixed-nav {\n            position: fixed;\n            width: 100%;\n            z-index: 99998;\n        }\n        .main-contents {\n          padding-right: 0;\n          padding-left: 0;\n        }\n        .offset-top {\n            margin-top: 50px;\n        }\n        div.leaflet-esri-webmap-layer2-label-pane > div.esri-leaflet-webmap-labels {\n          margin-left: 0 !important;\n          margin-top: -9px !important;\n          color: rgb(255,127,127) !important;\n        }\n        .route-path {\n          -webkit-animation: dash 10s linear forwards;\n          animation: dash 10s linear forwards;\n        }\n        @-webkit-keyframes dash {\n          to {\n            stroke-dashoffset: 0;\n          }\n        }\n        @keyframes dash {\n          to {\n            stroke-dashoffset: 0;\n          }\n        }\n        '
         ),
         _react2.default.createElement(
           _reactBootstrap.Navbar,
@@ -283,7 +283,7 @@ var App = function (_Mediator) {
               _react2.default.createElement(
                 'a',
                 { href: '#' },
-                '\u3080\u308D\u5199'
+                'Photo Spot Finder'
               )
             ),
             _react2.default.createElement(_reactBootstrap.Navbar.Toggle, null)

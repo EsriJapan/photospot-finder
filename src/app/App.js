@@ -244,8 +244,8 @@ class App extends Mediator {
           color: rgb(255,127,127) !important;
         }
         .route-path {
-          -webkit-animation: dash 6s linear forwards;
-          animation: dash 6s linear forwards;
+          -webkit-animation: dash 10s linear forwards;
+          animation: dash 10s linear forwards;
         }
         @-webkit-keyframes dash {
           to {
@@ -261,7 +261,7 @@ class App extends Mediator {
         <Navbar inverse className="fixed-nav">
           <Navbar.Header>
             <Navbar.Brand>
-              <a href="#">むろ写</a>
+              <a href="#">Photo Spot Finder</a>
             </Navbar.Brand>
             <Navbar.Toggle />
           </Navbar.Header>
