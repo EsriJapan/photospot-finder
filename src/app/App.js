@@ -42,7 +42,11 @@ class App extends Mediator {
         searchEndpointUrl: '//services.arcgis.com/wlVTGRSYTzAbjjiC/arcgis/rest/services/photospot_muroran/FeatureServer/0'
       };
       this.state.mapPage = {
-        visibility: false
+        visibility: false,
+        route: false,
+        routeTime: 0,
+        routeDistance: 0,
+        destination: ''
       };
       this.userIcon = L.icon({
         iconUrl: 'img/user.png',
@@ -125,17 +129,26 @@ class App extends Mediator {
       if(error){
         console.log(error);
       } else {
-        this.getRoute(response.routes);
+        this.getRoute(response.routes, data.properties.title);
       }
     }.bind(this));
 
     this.showMapPage();
   }
 
-  getRoute (routes) {
+  getRoute (routes, destination) {
     console.log('App.getRoute: ', routes);
     const routeGeoJSON = L.esri.Util.arcgisToGeoJSON(routes.features[0]);
     const map = this.state.map;
+
+    this.setState({
+      mapPage: {
+        route: true,
+        routeTime: Math.round(routeGeoJSON.properties.Total_TravelTime),
+        routeDistance: Math.round(routeGeoJSON.properties.Total_Kilometers * 100) / 100,
+        destination: destination
+      }
+    });
 
     if (this.routeLayer !== null) {
       this.routeLayer.clearLayers();
@@ -212,6 +225,11 @@ class App extends Mediator {
         .offset-top {
             margin-top: 50px;
         }
+        .leaflet-esri-webmap-layer-2-label-pane > div {
+          margin-left: 0;
+          margin-top: -9px;
+          color: rgb(255,127,127);
+        }
         `}</style>
         <Navbar inverse className="fixed-nav">
           <Navbar.Header>
@@ -233,7 +251,7 @@ class App extends Mediator {
             <Col xs={12} md={12}>
               <LoadPage visibility={this.state.loadPage.visibility} />
               <PhotoPage visibility={this.state.photoPage.visibility} searchRadius={this.state.photoPage.searchRadius} location={this.state.user.currentPosition} searchEndpointUrl={this.state.photoPage.searchEndpointUrl} onSelectPhoto={this.onSelectPhoto} />
-              <MapPage visibility={this.state.mapPage.visibility} mapid={this.props.mapid} />
+              <MapPage visibility={this.state.mapPage.visibility} mapid={this.props.mapid} route={this.state.mapPage.route} routeTime={this.state.mapPage.routeTime} routeDistance={this.state.mapPage.routeDistance} destination={this.state.mapPage.destination} />
             </Col>
           </Row>
         </Grid>

@@ -19,60 +19,34 @@
 // THE SOFTWARE.
 
 import React from 'react';
-import { MapView } from '../';
-import RouteInfo from './MapPage/RouteInfo';
 
-class MapPage extends React.Component {
+class RouteInfo extends React.Component {
   constructor (props) {
       super(props);
   }
 
   render () {
-    let visibility = 'visible';
-    if (this.props.visibility === false) {
-      visibility = 'hidden';
+    let visibility = 'block';
+    if (this.props.route === false) {
+      visibility = 'none';
     }
 
     return (
-      <div style={{ visibility: visibility }}>
-        <style type="text/css">{`
-        .route-info {
-          color: #fff;
-          background-color: #000;
-          opacity: 0.7;
-          bottom: 16px;
-          width: 100%;
-          height: 100px;
-          position: absolute;
-          z-index: 999;
-        }
-        .route-info > h3 {
-          text-align: center;
-          width: 100%;
-          font-weight: 100;
-        }
-        .route-info > p {
-          margin-top: 10px;
-          margin-left: 15px;
-          font-weight: 100;
-        }
-        `}</style>
-        <MapView mapid={this.props.mapid} height={window.innerHeight - 50 + "px"} />
-        <RouteInfo route={this.props.route} time={this.props.routeTime} distance={this.props.routeDistance} destination={this.props.destination} />
+      <div className="route-info" style={{ display: visibility }}>
+        <p>{this.props.destination} まで</p>
+        <h3>{this.props.time} 分　|　{this.props.distance} km</h3>
       </div>
     );
   }
 }
 
-MapPage.propTypes = {
-  visibility: React.PropTypes.bool,
-  mapid: React.PropTypes.string,
+RouteInfo.propTypes = {
   route: React.PropTypes.bool,
-  routeTime: React.PropTypes.number,
-  routeDistance: React.PropTypes.number,
+  time: React.PropTypes.number,
+  distance: React.PropTypes.number,
   destination: React.PropTypes.string
 };
 
-MapPage.displayName = 'MapPage';
+RouteInfo.displayName = 'RouteInfo';
 
-export default MapPage;
+export default RouteInfo;
