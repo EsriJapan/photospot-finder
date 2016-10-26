@@ -54,6 +54,15 @@ class App extends Mediator {
         iconAnchor: [16, 32]
       });
       this.userLayer = null;
+      this.routeStyle = {
+        color: 'rgb(255, 100, 0)',
+        weight: 7,
+        opacity: 0.7,
+        lineCap: 'round',
+        dashArray: '1000',
+        dashOffset: '1000',
+        className: 'route-path'
+      };
       this.routeLayer = null;
       this.onSelectPhoto = this.onSelectPhoto.bind(this);
       this.getRoute = this.getRoute.bind(this);
@@ -139,6 +148,7 @@ class App extends Mediator {
   getRoute (routes, destination) {
     console.log('App.getRoute: ', routes);
     const routeGeoJSON = L.esri.Util.arcgisToGeoJSON(routes.features[0]);
+    const routeStyle = this.routeStyle;
     const map = this.state.map;
 
     this.setState({
@@ -156,6 +166,9 @@ class App extends Mediator {
       this.routeLayer = L.geoJson(null, {
         onEachFeature: function (feature, layer) {
           map.fitBounds(layer.getBounds());
+        },
+        style: function (feature) {
+          return routeStyle;
         }
       });
       this.routeLayer.addTo(map);
@@ -229,6 +242,20 @@ class App extends Mediator {
           margin-left: 0 !important;
           margin-top: -9px !important;
           color: rgb(255,127,127) !important;
+        }
+        .route-path {
+          -webkit-animation: dash 6s linear forwards;
+          animation: dash 6s linear forwards;
+        }
+        @-webkit-keyframes dash {
+          to {
+            stroke-dashoffset: 0;
+          }
+        }
+        @keyframes dash {
+          to {
+            stroke-dashoffset: 0;
+          }
         }
         `}</style>
         <Navbar inverse className="fixed-nav">
