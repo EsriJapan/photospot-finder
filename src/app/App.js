@@ -31,19 +31,30 @@ class App extends Mediator {
   constructor (props) {
       super(props);
       this.state.user = {
-        currentPosition: [42.344, 140.982]
+        currentPosition: [42.315, 140.982]
       }
       this.state.loadPage = {
         visibility: true
       }
       this.state.photoPage = {
         visibility: true,
-        searchRadius: 1000,
+        searchRadius: 10000,
         searchEndpointUrl: '//services.arcgis.com/wlVTGRSYTzAbjjiC/arcgis/rest/services/photospot_muroran/FeatureServer/0'
       };
       this.state.mapPage = {
         visibility: false
       };
+      this.userIcon = L.icon({
+        iconUrl: 'img/user.png',
+        iconSize: [32, 32],
+        iconAnchor: [16, 32]
+      });
+      this.userLayer = null;
+      this.routeLayer = null;
+      this.onSelectPhoto = this.onSelectPhoto.bind(this);
+      this.getRoute = this.getRoute.bind(this);
+      this.showMapPage = this.showMapPage.bind(this);
+      this.showPhotoPage = this.showPhotoPage.bind(this);
   }
 
   readyComponents () {
@@ -73,12 +84,17 @@ class App extends Mediator {
         }
       });
     }.bind(this), 3000);
+
+    const userIcon = this.userIcon;
+    this.userLayer = L.marker(this.state.user.currentPosition, {
+      icon: userIcon
+    }).addTo(map);
   }
 
   getGeolocation (position) {
     console.log('App.geoGeolocation: ', position);
     const userInitState = {
-      currentPosition: [42.344, 140.982]
+      currentPosition: [42.315, 140.982]
       //currentPosition: [position.coords.latitude, position.coords.longitude]
     };
     this.setState({
@@ -88,6 +104,77 @@ class App extends Mediator {
 
   errorGeolocation () {
     alert('現在地を取得できません');
+  }
+
+  onSelectPhoto (data) {
+    console.log(data);
+    const routeEndpointUrl = 'https://utility.arcgis.com/usrsvcs/appservices/GfNovy4yk5xdJ9b4/rest/services/World/Route/NAServer/Route_World';
+    const photoSpotLocation = data.geometry.coordinates;
+    const userLocation = [this.state.user.currentPosition[1], this.state.user.currentPosition[0]];
+    /*const gpService = L.esri.GP.service({
+      url: routeEndpointUrl,
+      useCors: false
+    });
+    const gpTask = gpService.createTask();
+    gpTask.setParam('stops', userLocation[0] + ',' + userLocation[1] + '; ' + photoSpotLocation[0] + ',' + photoSpotLocation[1]);
+    gpTask.run(this.getRoute.bind(this));*/
+
+    L.esri.request(routeEndpointUrl + '/solve', {
+      stops: userLocation[0] + ',' + userLocation[1] + '; ' + photoSpotLocation[0] + ',' + photoSpotLocation[1]
+    }, function(error, response) {
+      if(error){
+        console.log(error);
+      } else {
+        this.getRoute(response.routes);
+      }
+    }.bind(this));
+
+    this.showMapPage();
+  }
+
+  getRoute (routes) {
+    console.log('App.getRoute: ', routes);
+    const routeGeoJSON = L.esri.Util.arcgisToGeoJSON(routes.features[0]);
+    const map = this.state.map;
+
+    if (this.routeLayer !== null) {
+      this.routeLayer.clearLayers();
+    } else {
+      this.routeLayer = L.geoJson(null, {
+        onEachFeature: function (feature, layer) {
+          map.fitBounds(layer.getBounds());
+        }
+      });
+      this.routeLayer.addTo(map);
+    }
+
+    this.routeLayer.addData(routeGeoJSON);
+  }
+
+  showMapPage () {
+    this.setState({
+      photoPage: {
+        visibility: false,
+        searchRadius: 10000,
+        searchEndpointUrl: '//services.arcgis.com/wlVTGRSYTzAbjjiC/arcgis/rest/services/photospot_muroran/FeatureServer/0'
+      },
+      mapPage: {
+        visibility: true
+      }
+    });
+  }
+
+  showPhotoPage () {
+    this.setState({
+      photoPage: {
+        visibility: true,
+        searchRadius: 10000,
+        searchEndpointUrl: '//services.arcgis.com/wlVTGRSYTzAbjjiC/arcgis/rest/services/photospot_muroran/FeatureServer/0'
+      },
+      mapPage: {
+        visibility: false
+      }
+    });
   }
 
   componentWillMount () {
@@ -135,8 +222,8 @@ class App extends Mediator {
           </Navbar.Header>
           <Navbar.Collapse>
             <Nav>
-              <NavItem eventKey={1} href="#photopage"><Glyphicon glyph="picture" /> 写真</NavItem>
-              <NavItem eventKey={2} href="#mappage"><Glyphicon glyph="map-marker" /> 地図</NavItem>
+              <NavItem eventKey={1} href="#photopage" onClick={this.showPhotoPage}><Glyphicon glyph="picture" /> 写真</NavItem>
+              <NavItem eventKey={2} href="#mappage" onClick={this.showMapPage}><Glyphicon glyph="map-marker" /> 地図</NavItem>
               <NavItem eventKey={3} href="https://github.com/EsriJapan/photospot-finder">GitHub</NavItem>
             </Nav>
           </Navbar.Collapse>
@@ -145,7 +232,7 @@ class App extends Mediator {
           <Row className="offset-top">
             <Col xs={12} md={12}>
               <LoadPage visibility={this.state.loadPage.visibility} />
-              <PhotoPage visibility={this.state.photoPage.visibility} searchRadius={this.state.photoPage.searchRadius} location={this.state.user.currentPosition} searchEndpointUrl={this.state.photoPage.searchEndpointUrl} />
+              <PhotoPage visibility={this.state.photoPage.visibility} searchRadius={this.state.photoPage.searchRadius} location={this.state.user.currentPosition} searchEndpointUrl={this.state.photoPage.searchEndpointUrl} onSelectPhoto={this.onSelectPhoto} />
               <MapPage visibility={this.state.mapPage.visibility} mapid={this.props.mapid} />
             </Col>
           </Row>

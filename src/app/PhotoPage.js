@@ -80,10 +80,12 @@ class PhotoPage extends React.Component {
           title={p.properties.title} 
           comment={p.properties.comment_text} 
           time={p.properties.report_time} 
+          data={p} 
+          onSelectPhoto={this.props.onSelectPhoto}
           key={"murophoto_" + i} 
         />
       );
-    });
+    }.bind(this));
 
     return (
       <div style={{ display: visibility }}>
@@ -122,7 +124,8 @@ PhotoPage.propTypes = {
   visbility: React.PropTypes.bool,
   location: React.PropTypes.array,
   searchRadius: React.PropTypes.number,
-  searchEndpointUrl: React.PropTypes.string
+  searchEndpointUrl: React.PropTypes.string,
+  onSelectPhoto: React.PropTypes.func
 };
 
 PhotoPage.displayName = 'PhotoPage';

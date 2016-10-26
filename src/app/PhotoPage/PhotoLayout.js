@@ -24,16 +24,16 @@ import { Button, Glyphicon } from 'react-bootstrap';
 class PhotoLayout extends React.Component {
   constructor (props) {
       super(props);
-      this._onGetHome = this._onGetHome.bind(this);
+      this._onSelectPhoto = this._onSelectPhoto.bind(this);
   }
 
-  _onGetHome () {
-    this.props.onGetHome(this.props.center, this.props.zoom);
+  _onSelectPhoto () {
+    this.props.onSelectPhoto(this.props.data);
   }
 
   render () {
     return (
-      <div className="murophoto-frame">
+      <div className="murophoto-frame" onClick={this._onSelectPhoto}>
         <img src={this.props.imgUrl} className="murophoto" />
         <h5>{this.props.title}</h5>
         <p>by. {this.props.name}</p>
@@ -47,7 +47,9 @@ PhotoLayout.propTypes = {
   name: React.PropTypes.string,
   title: React.PropTypes.string,
   comment: React.PropTypes.string,
-  time: React.PropTypes.number
+  time: React.PropTypes.number,
+  data: React.PropTypes.object,
+  onSelectPhoto: React.PropTypes.func
 };
 
 PhotoLayout.displayName = 'PhotoLayout';

@@ -62,19 +62,30 @@ var App = function (_Mediator) {
     var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
 
     _this.state.user = {
-      currentPosition: [42.344, 140.982]
+      currentPosition: [42.315, 140.982]
     };
     _this.state.loadPage = {
       visibility: true
     };
     _this.state.photoPage = {
       visibility: true,
-      searchRadius: 1000,
+      searchRadius: 10000,
       searchEndpointUrl: '//services.arcgis.com/wlVTGRSYTzAbjjiC/arcgis/rest/services/photospot_muroran/FeatureServer/0'
     };
     _this.state.mapPage = {
       visibility: false
     };
+    _this.userIcon = L.icon({
+      iconUrl: 'img/user.png',
+      iconSize: [32, 32],
+      iconAnchor: [16, 32]
+    });
+    _this.userLayer = null;
+    _this.routeLayer = null;
+    _this.onSelectPhoto = _this.onSelectPhoto.bind(_this);
+    _this.getRoute = _this.getRoute.bind(_this);
+    _this.showMapPage = _this.showMapPage.bind(_this);
+    _this.showPhotoPage = _this.showPhotoPage.bind(_this);
     return _this;
   }
 
@@ -107,13 +118,18 @@ var App = function (_Mediator) {
           }
         });
       }.bind(this), 3000);
+
+      var userIcon = this.userIcon;
+      this.userLayer = L.marker(this.state.user.currentPosition, {
+        icon: userIcon
+      }).addTo(map);
     }
   }, {
     key: 'getGeolocation',
     value: function getGeolocation(position) {
       console.log('App.geoGeolocation: ', position);
       var userInitState = {
-        currentPosition: [42.344, 140.982]
+        currentPosition: [42.315, 140.982]
         //currentPosition: [position.coords.latitude, position.coords.longitude]
       };
       this.setState({
@@ -124,6 +140,81 @@ var App = function (_Mediator) {
     key: 'errorGeolocation',
     value: function errorGeolocation() {
       alert('現在地を取得できません');
+    }
+  }, {
+    key: 'onSelectPhoto',
+    value: function onSelectPhoto(data) {
+      console.log(data);
+      var routeEndpointUrl = 'https://utility.arcgis.com/usrsvcs/appservices/GfNovy4yk5xdJ9b4/rest/services/World/Route/NAServer/Route_World';
+      var photoSpotLocation = data.geometry.coordinates;
+      var userLocation = [this.state.user.currentPosition[1], this.state.user.currentPosition[0]];
+      /*const gpService = L.esri.GP.service({
+        url: routeEndpointUrl,
+        useCors: false
+      });
+      const gpTask = gpService.createTask();
+      gpTask.setParam('stops', userLocation[0] + ',' + userLocation[1] + '; ' + photoSpotLocation[0] + ',' + photoSpotLocation[1]);
+      gpTask.run(this.getRoute.bind(this));*/
+
+      L.esri.request(routeEndpointUrl + '/solve', {
+        stops: userLocation[0] + ',' + userLocation[1] + '; ' + photoSpotLocation[0] + ',' + photoSpotLocation[1]
+      }, function (error, response) {
+        if (error) {
+          console.log(error);
+        } else {
+          this.getRoute(response.routes);
+        }
+      }.bind(this));
+
+      this.showMapPage();
+    }
+  }, {
+    key: 'getRoute',
+    value: function getRoute(routes) {
+      console.log('App.getRoute: ', routes);
+      var routeGeoJSON = L.esri.Util.arcgisToGeoJSON(routes.features[0]);
+      var map = this.state.map;
+
+      if (this.routeLayer !== null) {
+        this.routeLayer.clearLayers();
+      } else {
+        this.routeLayer = L.geoJson(null, {
+          onEachFeature: function onEachFeature(feature, layer) {
+            map.fitBounds(layer.getBounds());
+          }
+        });
+        this.routeLayer.addTo(map);
+      }
+
+      this.routeLayer.addData(routeGeoJSON);
+    }
+  }, {
+    key: 'showMapPage',
+    value: function showMapPage() {
+      this.setState({
+        photoPage: {
+          visibility: false,
+          searchRadius: 10000,
+          searchEndpointUrl: '//services.arcgis.com/wlVTGRSYTzAbjjiC/arcgis/rest/services/photospot_muroran/FeatureServer/0'
+        },
+        mapPage: {
+          visibility: true
+        }
+      });
+    }
+  }, {
+    key: 'showPhotoPage',
+    value: function showPhotoPage() {
+      this.setState({
+        photoPage: {
+          visibility: true,
+          searchRadius: 10000,
+          searchEndpointUrl: '//services.arcgis.com/wlVTGRSYTzAbjjiC/arcgis/rest/services/photospot_muroran/FeatureServer/0'
+        },
+        mapPage: {
+          visibility: false
+        }
+      });
     }
   }, {
     key: 'componentWillMount',
@@ -179,13 +270,13 @@ var App = function (_Mediator) {
               null,
               _react2.default.createElement(
                 _reactBootstrap.NavItem,
-                { eventKey: 1, href: '#photopage' },
+                { eventKey: 1, href: '#photopage', onClick: this.showPhotoPage },
                 _react2.default.createElement(_reactBootstrap.Glyphicon, { glyph: 'picture' }),
                 ' \u5199\u771F'
               ),
               _react2.default.createElement(
                 _reactBootstrap.NavItem,
-                { eventKey: 2, href: '#mappage' },
+                { eventKey: 2, href: '#mappage', onClick: this.showMapPage },
                 _react2.default.createElement(_reactBootstrap.Glyphicon, { glyph: 'map-marker' }),
                 ' \u5730\u56F3'
               ),
@@ -207,7 +298,7 @@ var App = function (_Mediator) {
               _reactBootstrap.Col,
               { xs: 12, md: 12 },
               _react2.default.createElement(_LoadPage2.default, { visibility: this.state.loadPage.visibility }),
-              _react2.default.createElement(_PhotoPage2.default, { visibility: this.state.photoPage.visibility, searchRadius: this.state.photoPage.searchRadius, location: this.state.user.currentPosition, searchEndpointUrl: this.state.photoPage.searchEndpointUrl }),
+              _react2.default.createElement(_PhotoPage2.default, { visibility: this.state.photoPage.visibility, searchRadius: this.state.photoPage.searchRadius, location: this.state.user.currentPosition, searchEndpointUrl: this.state.photoPage.searchEndpointUrl, onSelectPhoto: this.onSelectPhoto }),
               _react2.default.createElement(_MapPage2.default, { visibility: this.state.mapPage.visibility, mapid: this.props.mapid })
             )
           )
@@ -492,9 +583,11 @@ var PhotoPage = function (_React$Component) {
           title: p.properties.title,
           comment: p.properties.comment_text,
           time: p.properties.report_time,
+          data: p,
+          onSelectPhoto: this.props.onSelectPhoto,
           key: "murophoto_" + i
         });
-      });
+      }.bind(this));
 
       return _react2.default.createElement(
         'div',
@@ -516,7 +609,8 @@ PhotoPage.propTypes = {
   visbility: _react2.default.PropTypes.bool,
   location: _react2.default.PropTypes.array,
   searchRadius: _react2.default.PropTypes.number,
-  searchEndpointUrl: _react2.default.PropTypes.string
+  searchEndpointUrl: _react2.default.PropTypes.string,
+  onSelectPhoto: _react2.default.PropTypes.func
 };
 
 PhotoPage.displayName = 'PhotoPage';
@@ -571,21 +665,21 @@ var PhotoLayout = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (PhotoLayout.__proto__ || Object.getPrototypeOf(PhotoLayout)).call(this, props));
 
-    _this._onGetHome = _this._onGetHome.bind(_this);
+    _this._onSelectPhoto = _this._onSelectPhoto.bind(_this);
     return _this;
   }
 
   _createClass(PhotoLayout, [{
-    key: '_onGetHome',
-    value: function _onGetHome() {
-      this.props.onGetHome(this.props.center, this.props.zoom);
+    key: '_onSelectPhoto',
+    value: function _onSelectPhoto() {
+      this.props.onSelectPhoto(this.props.data);
     }
   }, {
     key: 'render',
     value: function render() {
       return _react2.default.createElement(
         'div',
-        { className: 'murophoto-frame' },
+        { className: 'murophoto-frame', onClick: this._onSelectPhoto },
         _react2.default.createElement('img', { src: this.props.imgUrl, className: 'murophoto' }),
         _react2.default.createElement(
           'h5',
@@ -610,7 +704,9 @@ PhotoLayout.propTypes = {
   name: _react2.default.PropTypes.string,
   title: _react2.default.PropTypes.string,
   comment: _react2.default.PropTypes.string,
-  time: _react2.default.PropTypes.number
+  time: _react2.default.PropTypes.number,
+  data: _react2.default.PropTypes.object,
+  onSelectPhoto: _react2.default.PropTypes.func
 };
 
 PhotoLayout.displayName = 'PhotoLayout';
