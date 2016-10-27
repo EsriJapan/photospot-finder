@@ -26,13 +26,13 @@ class SpotFormPage extends React.Component {
   }
 
   render () {
-    let visibility = 'visible';
+    let visibility = 'block';
     if (this.props.visibility === false) {
-      visibility = 'hidden';
+      visibility = 'none';
     }
 
     return (
-      <div className="spotformpage" style={{ visibility: visibility, position: 'absolute', top: 0, width: '100%', marginLeft: '-15px' }}>
+      <div className="spotformpage" style={{ display: visibility, position: 'absolute', top: 0, width: '100%', marginLeft: '-15px' }}>
         <iframe src={this.props.url} style={{ width: '100%', height: window.innerHeight - 50 + "px" }} />
       </div>
     );

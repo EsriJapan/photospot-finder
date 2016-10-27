@@ -927,14 +927,14 @@ var SpotFormPage = function (_React$Component) {
   _createClass(SpotFormPage, [{
     key: 'render',
     value: function render() {
-      var visibility = 'visible';
+      var visibility = 'block';
       if (this.props.visibility === false) {
-        visibility = 'hidden';
+        visibility = 'none';
       }
 
       return _react2.default.createElement(
         'div',
-        { className: 'spotformpage', style: { visibility: visibility, position: 'absolute', top: 0, width: '100%', marginLeft: '-15px' } },
+        { className: 'spotformpage', style: { display: visibility, position: 'absolute', top: 0, width: '100%', marginLeft: '-15px' } },
         _react2.default.createElement('iframe', { src: this.props.url, style: { width: '100%', height: window.innerHeight - 50 + "px" } })
       );
     }
