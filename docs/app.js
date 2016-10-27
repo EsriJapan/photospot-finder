@@ -85,7 +85,7 @@ var App = function (_Mediator) {
 
     // SpotFormPage State
     _this.state.spotformPageVisibility = false;
-    _this.state.spotformPageUrl = 'http://ej.maps.arcgis.com/apps/GeoForm/index.html?appid=9dd92be784fe4f3f8d5a70624781e3d1';
+    _this.state.spotformPageUrl = '//www.arcgis.com/apps/GeoForm/index.html?appid=9dd92be784fe4f3f8d5a70624781e3d1';
 
     _this.userIcon = L.icon({
       iconUrl: 'img/user.png',

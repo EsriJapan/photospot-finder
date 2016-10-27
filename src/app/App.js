@@ -52,7 +52,7 @@ class App extends Mediator {
 
       // SpotFormPage State
       this.state.spotformPageVisibility = false;
-      this.state.spotformPageUrl = 'http://ej.maps.arcgis.com/apps/GeoForm/index.html?appid=9dd92be784fe4f3f8d5a70624781e3d1';
+      this.state.spotformPageUrl = '//www.arcgis.com/apps/GeoForm/index.html?appid=9dd92be784fe4f3f8d5a70624781e3d1';
 
       this.userIcon = L.icon({
         iconUrl: 'img/user.png',
