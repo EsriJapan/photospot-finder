@@ -194,7 +194,8 @@ class App extends Mediator {
     this.setState({
       loadPageVisibility: true,
       photoPageVisibility: false,
-      mapPageVisibility: false
+      mapPageVisibility: false,
+      spotformPageVisibility: false
     });
   }
 

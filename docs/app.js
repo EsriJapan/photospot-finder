@@ -241,7 +241,8 @@ var App = function (_Mediator) {
       this.setState({
         loadPageVisibility: true,
         photoPageVisibility: false,
-        mapPageVisibility: false
+        mapPageVisibility: false,
+        spotformPageVisibility: false
       });
     }
   }, {
