@@ -818,7 +818,7 @@ var PhotoPage = function (_React$Component) {
         _react2.default.createElement(
           'style',
           { type: 'text/css' },
-          '\n        .murophoto-frame {\n          color: #fff;\n          text-shadow: 1px 1px 1px #333, -1px 1px 1px #333, 1px -1px 1px #333, -1px -1px 1px #333;\n          position: relative;\n          transition: all 0.3s;\n        }\n        .murophoto-frame:hover {\n          opacity: 0.7;\n          border: solid #000 3px;\n        }\n        .murophoto-frame > h5 {\n          position: absolute;\n          margin: 15px;\n          bottom: 30px;\n          text-align: right;\n          width: 90%;\n        }\n        .murophoto-frame > p {\n          position: absolute;\n          bottom: 5px;\n          margin: 15px;\n          font-size: 0.8em;\n          text-align: right;\n          width: 90%;\n        }\n        .murophoto {\n          width: 100%;\n        }\n        '
+          '\n        .murophoto-frame {\n          color: #fff;\n          text-shadow: 1px 1px 1px #333, -1px 1px 1px #333, 1px -1px 1px #333, -1px -1px 1px #333;\n          position: relative;\n          transition: all 0.3s;\n        }\n        .murophoto-frame:hover {\n          opacity: 0.7;\n          border: solid #000 3px;\n        }\n        .to-route {\n          position: absolute;\n          top: 0;\n          left: 0;\n          right: 0;\n          bottom: 0;\n          margin: auto;\n          height: 10%;\n          width: 100%;\n          text-align: center;\n          font-size: 0.7em;\n          opacity: 0;\n          transition: opacity 0.3s;\n        }\n        .murophoto-frame:hover > div.to-route {\n          opacity: 1;\n        }\n        .murophoto-frame > h5 {\n          position: absolute;\n          margin: 15px;\n          bottom: 30px;\n          text-align: right;\n          width: 90%;\n        }\n        .murophoto-frame > p {\n          position: absolute;\n          bottom: 5px;\n          margin: 15px;\n          font-size: 0.8em;\n          text-align: right;\n          width: 90%;\n        }\n        .murophoto {\n          width: 100%;\n        }\n        '
         ),
         Photos,
         _react2.default.createElement(_SearchInfo2.default, { onChangeSwitch: this.props.onChangeSwitch })
@@ -917,6 +917,12 @@ var PhotoLayout = function (_React$Component) {
           null,
           'by. ',
           this.props.name
+        ),
+        _react2.default.createElement(
+          'div',
+          { className: 'to-route' },
+          _react2.default.createElement(_reactBootstrap.Glyphicon, { glyph: 'globe' }),
+          ' \u30EB\u30FC\u30C8\u691C\u7D22\u3092\u958B\u59CB\u3059\u308B'
         )
       );
     }

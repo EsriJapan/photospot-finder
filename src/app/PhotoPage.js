@@ -110,6 +110,23 @@ class PhotoPage extends React.Component {
           opacity: 0.7;
           border: solid #000 3px;
         }
+        .to-route {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          margin: auto;
+          height: 10%;
+          width: 100%;
+          text-align: center;
+          font-size: 0.7em;
+          opacity: 0;
+          transition: opacity 0.3s;
+        }
+        .murophoto-frame:hover > div.to-route {
+          opacity: 1;
+        }
         .murophoto-frame > h5 {
           position: absolute;
           margin: 15px;

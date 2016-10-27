@@ -37,6 +37,7 @@ class PhotoLayout extends React.Component {
         <img src={this.props.imgUrl} className="murophoto" />
         <h5>{this.props.title}</h5>
         <p>by. {this.props.name}</p>
+        <div className="to-route"><Glyphicon glyph="globe" /> ルート検索を開始する</div>
       </div>
     );
   }
