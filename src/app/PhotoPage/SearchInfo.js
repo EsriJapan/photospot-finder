@@ -51,7 +51,7 @@ class SearchInfo extends React.Component {
         <Switch
           defaultValue={true} 
           bsSize={"small"} 
-          //onChange={this.props.onChangeSwitch}
+          onChange={this.props.onChangeSwitch}
           onText={"徒歩"}
           offText={"自動車"} 
           offColor={"warning"}

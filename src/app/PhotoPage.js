@@ -71,7 +71,7 @@ class PhotoPage extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if (this.props.location !== nextProps.location) {
+    if (this.props.location !== nextProps.location || this.props.searchRadius !== nextProps.searchRadius) {
       this.searchPhotos(nextProps.searchEndpointUrl, nextProps.location, nextProps.searchRadius);
     }
   }
@@ -130,7 +130,7 @@ class PhotoPage extends React.Component {
         }
         `}</style>
         {Photos}
-        <SearchInfo />
+        <SearchInfo onChangeSwitch={this.props.onChangeSwitch} />
       </div>
     );
   }
@@ -142,7 +142,8 @@ PhotoPage.propTypes = {
   searchRadius: React.PropTypes.number,
   searchEndpointUrl: React.PropTypes.string,
   onSelectPhoto: React.PropTypes.func,
-  onLoadPhotos: React.PropTypes.func
+  onLoadPhotos: React.PropTypes.func,
+  onChangeSwitch: React.PropTypes.func
 };
 
 PhotoPage.displayName = 'PhotoPage';

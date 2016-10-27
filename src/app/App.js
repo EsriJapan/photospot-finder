@@ -40,8 +40,9 @@ class App extends Mediator {
 
       // PhotoPage State
       this.state.photoPageVisibility = false;
-      this.state.photoPageSearchRadius = 10000;
+      this.state.photoPageSearchRadius = 2500;
       this.state.photoPageSearchEndpointUrl = '//services.arcgis.com/wlVTGRSYTzAbjjiC/arcgis/rest/services/photospot_muroran/FeatureServer/0';
+      this.state.travelMode = 0; // 0: walk, 1: car
 
       // MapPage State
       this.state.mapPageVisibility = false;
@@ -72,6 +73,7 @@ class App extends Mediator {
       this.routeLayer = null;
       this.onSelectPhoto = this.onSelectPhoto.bind(this);
       this.onLoadPhotos = this.onLoadPhotos.bind(this);
+      this.onChangeSwitch = this.onChangeSwitch.bind(this);
       this.getRoute = this.getRoute.bind(this);
       this.showMapPage = this.showMapPage.bind(this);
       this.showPhotoPage = this.showPhotoPage.bind(this);
@@ -107,6 +109,19 @@ class App extends Mediator {
     const routeEndpointUrl = 'https://utility.arcgis.com/usrsvcs/appservices/GfNovy4yk5xdJ9b4/rest/services/World/Route/NAServer/Route_World';
     const photoSpotLocation = data.geometry.coordinates;
     const userLocation = [this.state.userCurrentPosition[1], this.state.userCurrentPosition[0]];
+    let routeParams;
+
+    if (this.state.travelMode === 1) {
+      routeParams = {
+        stops: userLocation[0] + ',' + userLocation[1] + '; ' + photoSpotLocation[0] + ',' + photoSpotLocation[1]
+      }
+    } else if (this.state.travelMode === 0) {
+      routeParams = {
+        stops: userLocation[0] + ',' + userLocation[1] + '; ' + photoSpotLocation[0] + ',' + photoSpotLocation[1],
+        travelMode: '{"attributeParameterValues":[{"parameterName":"Restriction Usage","attributeName":"Walking","value":"PROHIBITED"},{"parameterName":"Restriction Usage","attributeName":"Preferred for Pedestrians","value":"PREFER_LOW"},{"parameterName":"Walking Speed (km/h)","attributeName":"WalkTime","value":5},{"parameterName":"Restriction Usage","attributeName":"Avoid Roads Unsuitable for Pedestrians","value":"AVOID_HIGH"}],"description":"Follows paths and roads that allow pedestrian traffic and finds solutions that optimize travel time. The walking speed is set to 5 kilometers per hour.","impedanceAttributeName":"WalkTime","simplificationToleranceUnits":"esriMeters","uturnAtJunctions":"esriNFSBAllowBacktrack","restrictionAttributeNames":["Avoid Roads Unsuitable for Pedestrians","Preferred for Pedestrians","Walking"],"useHierarchy":false,"simplificationTolerance":2,"timeAttributeName":"WalkTime","distanceAttributeName":"Kilometers","type":"WALK","id":"caFAgoThrvUpkFBW","name":"Walking Time"}'
+      }
+    }
+
     /*const gpService = L.esri.GP.service({
       url: routeEndpointUrl,
       useCors: false
@@ -115,9 +130,7 @@ class App extends Mediator {
     gpTask.setParam('stops', userLocation[0] + ',' + userLocation[1] + '; ' + photoSpotLocation[0] + ',' + photoSpotLocation[1]);
     gpTask.run(this.getRoute.bind(this));*/
 
-    L.esri.request(routeEndpointUrl + '/solve', {
-      stops: userLocation[0] + ',' + userLocation[1] + '; ' + photoSpotLocation[0] + ',' + photoSpotLocation[1]
-    }, function(error, response) {
+    L.esri.request(routeEndpointUrl + '/solve', routeParams, function(error, response) {
       if(error){
         console.log(error);
       } else {
@@ -133,15 +146,37 @@ class App extends Mediator {
     this.showPhotoPage();
   }
 
+  onChangeSwitch (element, state) {
+    console.log('App.onChangeSwitch: ', element, state);
+    if (state === true) {
+      this.setState({
+        photoPageSearchRadius: 2500,
+        travelMode: 0
+      });
+    } else {
+      this.setState({
+        photoPageSearchRadius: 10000,
+        travelMode: 1
+      });
+    }
+  }
+
   getRoute (routes, destination) {
     console.log('App.getRoute: ', routes);
     const routeGeoJSON = L.esri.Util.arcgisToGeoJSON(routes.features[0]);
     const routeStyle = this.routeStyle;
     const map = this.state.map;
+    let routeTime;
+
+    if (this.state.travelMode === 0) {
+      routeTime = Math.round(routeGeoJSON.properties.Total_WalkTime);
+    } else if (this.state.travelMode === 1) {
+      routeTime = Math.round(routeGeoJSON.properties.Total_TravelTime);
+    }
 
     this.setState({
       mapPageRoute: true,
-      mapPageRouteTime: Math.round(routeGeoJSON.properties.Total_TravelTime),
+      mapPageRouteTime: routeTime,
       mapPageRouteDistance: Math.round(routeGeoJSON.properties.Total_Kilometers * 100) / 100,
       mapPageDestination: destination
     });
@@ -276,10 +311,30 @@ class App extends Mediator {
         <Grid className="main-contents">
           <Row className="offset-top">
             <Col xs={12} md={12}>
-              <LoadPage visibility={this.state.loadPageVisibility} />
-              <PhotoPage visibility={this.state.photoPageVisibility} searchRadius={this.state.photoPageSearchRadius} location={this.state.userCurrentPosition} searchEndpointUrl={this.state.photoPageSearchEndpointUrl} onSelectPhoto={this.onSelectPhoto} onLoadPhotos={this.onLoadPhotos} />
-              <MapPage visibility={this.state.mapPageVisibility} mapid={this.props.mapid} route={this.state.mapPageRoute} routeTime={this.state.mapPageRouteTime} routeDistance={this.state.mapPageRouteDistance} destination={this.state.mapPageDestination} />
-              <SpotFormPage visibility={this.state.spotformPageVisibility} url={this.state.spotformPageUrl} />
+              <LoadPage 
+                visibility={this.state.loadPageVisibility} 
+              />
+              <PhotoPage 
+                visibility={this.state.photoPageVisibility} 
+                searchRadius={this.state.photoPageSearchRadius} 
+                location={this.state.userCurrentPosition} 
+                searchEndpointUrl={this.state.photoPageSearchEndpointUrl} 
+                onSelectPhoto={this.onSelectPhoto} 
+                onLoadPhotos={this.onLoadPhotos} 
+                onChangeSwitch={this.onChangeSwitch} 
+              />
+              <MapPage 
+                visibility={this.state.mapPageVisibility} 
+                mapid={this.props.mapid} 
+                route={this.state.mapPageRoute} 
+                routeTime={this.state.mapPageRouteTime} 
+                routeDistance={this.state.mapPageRouteDistance} 
+                destination={this.state.mapPageDestination} 
+              />
+              <SpotFormPage 
+                visibility={this.state.spotformPageVisibility} 
+                url={this.state.spotformPageUrl} 
+              />
             </Col>
           </Row>
         </Grid>

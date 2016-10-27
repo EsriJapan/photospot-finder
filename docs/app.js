@@ -73,8 +73,9 @@ var App = function (_Mediator) {
 
     // PhotoPage State
     _this.state.photoPageVisibility = false;
-    _this.state.photoPageSearchRadius = 10000;
+    _this.state.photoPageSearchRadius = 2500;
     _this.state.photoPageSearchEndpointUrl = '//services.arcgis.com/wlVTGRSYTzAbjjiC/arcgis/rest/services/photospot_muroran/FeatureServer/0';
+    _this.state.travelMode = 0; // 0: walk, 1: car
 
     // MapPage State
     _this.state.mapPageVisibility = false;
@@ -105,6 +106,7 @@ var App = function (_Mediator) {
     _this.routeLayer = null;
     _this.onSelectPhoto = _this.onSelectPhoto.bind(_this);
     _this.onLoadPhotos = _this.onLoadPhotos.bind(_this);
+    _this.onChangeSwitch = _this.onChangeSwitch.bind(_this);
     _this.getRoute = _this.getRoute.bind(_this);
     _this.showMapPage = _this.showMapPage.bind(_this);
     _this.showPhotoPage = _this.showPhotoPage.bind(_this);
@@ -146,6 +148,19 @@ var App = function (_Mediator) {
       var routeEndpointUrl = 'https://utility.arcgis.com/usrsvcs/appservices/GfNovy4yk5xdJ9b4/rest/services/World/Route/NAServer/Route_World';
       var photoSpotLocation = data.geometry.coordinates;
       var userLocation = [this.state.userCurrentPosition[1], this.state.userCurrentPosition[0]];
+      var routeParams = void 0;
+
+      if (this.state.travelMode === 1) {
+        routeParams = {
+          stops: userLocation[0] + ',' + userLocation[1] + '; ' + photoSpotLocation[0] + ',' + photoSpotLocation[1]
+        };
+      } else if (this.state.travelMode === 0) {
+        routeParams = {
+          stops: userLocation[0] + ',' + userLocation[1] + '; ' + photoSpotLocation[0] + ',' + photoSpotLocation[1],
+          travelMode: '{"attributeParameterValues":[{"parameterName":"Restriction Usage","attributeName":"Walking","value":"PROHIBITED"},{"parameterName":"Restriction Usage","attributeName":"Preferred for Pedestrians","value":"PREFER_LOW"},{"parameterName":"Walking Speed (km/h)","attributeName":"WalkTime","value":5},{"parameterName":"Restriction Usage","attributeName":"Avoid Roads Unsuitable for Pedestrians","value":"AVOID_HIGH"}],"description":"Follows paths and roads that allow pedestrian traffic and finds solutions that optimize travel time. The walking speed is set to 5 kilometers per hour.","impedanceAttributeName":"WalkTime","simplificationToleranceUnits":"esriMeters","uturnAtJunctions":"esriNFSBAllowBacktrack","restrictionAttributeNames":["Avoid Roads Unsuitable for Pedestrians","Preferred for Pedestrians","Walking"],"useHierarchy":false,"simplificationTolerance":2,"timeAttributeName":"WalkTime","distanceAttributeName":"Kilometers","type":"WALK","id":"caFAgoThrvUpkFBW","name":"Walking Time"}'
+        };
+      }
+
       /*const gpService = L.esri.GP.service({
         url: routeEndpointUrl,
         useCors: false
@@ -154,9 +169,7 @@ var App = function (_Mediator) {
       gpTask.setParam('stops', userLocation[0] + ',' + userLocation[1] + '; ' + photoSpotLocation[0] + ',' + photoSpotLocation[1]);
       gpTask.run(this.getRoute.bind(this));*/
 
-      L.esri.request(routeEndpointUrl + '/solve', {
-        stops: userLocation[0] + ',' + userLocation[1] + '; ' + photoSpotLocation[0] + ',' + photoSpotLocation[1]
-      }, function (error, response) {
+      L.esri.request(routeEndpointUrl + '/solve', routeParams, function (error, response) {
         if (error) {
           console.log(error);
         } else {
@@ -173,16 +186,39 @@ var App = function (_Mediator) {
       this.showPhotoPage();
     }
   }, {
+    key: 'onChangeSwitch',
+    value: function onChangeSwitch(element, state) {
+      console.log('App.onChangeSwitch: ', element, state);
+      if (state === true) {
+        this.setState({
+          photoPageSearchRadius: 2500,
+          travelMode: 0
+        });
+      } else {
+        this.setState({
+          photoPageSearchRadius: 10000,
+          travelMode: 1
+        });
+      }
+    }
+  }, {
     key: 'getRoute',
     value: function getRoute(routes, destination) {
       console.log('App.getRoute: ', routes);
       var routeGeoJSON = L.esri.Util.arcgisToGeoJSON(routes.features[0]);
       var routeStyle = this.routeStyle;
       var map = this.state.map;
+      var routeTime = void 0;
+
+      if (this.state.travelMode === 0) {
+        routeTime = Math.round(routeGeoJSON.properties.Total_WalkTime);
+      } else if (this.state.travelMode === 1) {
+        routeTime = Math.round(routeGeoJSON.properties.Total_TravelTime);
+      }
 
       this.setState({
         mapPageRoute: true,
-        mapPageRouteTime: Math.round(routeGeoJSON.properties.Total_TravelTime),
+        mapPageRouteTime: routeTime,
         mapPageRouteDistance: Math.round(routeGeoJSON.properties.Total_Kilometers * 100) / 100,
         mapPageDestination: destination
       });
@@ -345,10 +381,30 @@ var App = function (_Mediator) {
             _react2.default.createElement(
               _reactBootstrap.Col,
               { xs: 12, md: 12 },
-              _react2.default.createElement(_LoadPage2.default, { visibility: this.state.loadPageVisibility }),
-              _react2.default.createElement(_PhotoPage2.default, { visibility: this.state.photoPageVisibility, searchRadius: this.state.photoPageSearchRadius, location: this.state.userCurrentPosition, searchEndpointUrl: this.state.photoPageSearchEndpointUrl, onSelectPhoto: this.onSelectPhoto, onLoadPhotos: this.onLoadPhotos }),
-              _react2.default.createElement(_MapPage2.default, { visibility: this.state.mapPageVisibility, mapid: this.props.mapid, route: this.state.mapPageRoute, routeTime: this.state.mapPageRouteTime, routeDistance: this.state.mapPageRouteDistance, destination: this.state.mapPageDestination }),
-              _react2.default.createElement(_SpotFormPage2.default, { visibility: this.state.spotformPageVisibility, url: this.state.spotformPageUrl })
+              _react2.default.createElement(_LoadPage2.default, {
+                visibility: this.state.loadPageVisibility
+              }),
+              _react2.default.createElement(_PhotoPage2.default, {
+                visibility: this.state.photoPageVisibility,
+                searchRadius: this.state.photoPageSearchRadius,
+                location: this.state.userCurrentPosition,
+                searchEndpointUrl: this.state.photoPageSearchEndpointUrl,
+                onSelectPhoto: this.onSelectPhoto,
+                onLoadPhotos: this.onLoadPhotos,
+                onChangeSwitch: this.onChangeSwitch
+              }),
+              _react2.default.createElement(_MapPage2.default, {
+                visibility: this.state.mapPageVisibility,
+                mapid: this.props.mapid,
+                route: this.state.mapPageRoute,
+                routeTime: this.state.mapPageRouteTime,
+                routeDistance: this.state.mapPageRouteDistance,
+                destination: this.state.mapPageDestination
+              }),
+              _react2.default.createElement(_SpotFormPage2.default, {
+                visibility: this.state.spotformPageVisibility,
+                url: this.state.spotformPageUrl
+              })
             )
           )
         )
@@ -731,7 +787,7 @@ var PhotoPage = function (_React$Component) {
   }, {
     key: 'componentWillReceiveProps',
     value: function componentWillReceiveProps(nextProps) {
-      if (this.props.location !== nextProps.location) {
+      if (this.props.location !== nextProps.location || this.props.searchRadius !== nextProps.searchRadius) {
         this.searchPhotos(nextProps.searchEndpointUrl, nextProps.location, nextProps.searchRadius);
       }
     }
@@ -765,7 +821,7 @@ var PhotoPage = function (_React$Component) {
           '\n        .murophoto-frame {\n          color: #fff;\n          text-shadow: 1px 1px 1px #333, -1px 1px 1px #333, 1px -1px 1px #333, -1px -1px 1px #333;\n          position: relative;\n          transition: all 0.3s;\n        }\n        .murophoto-frame:hover {\n          opacity: 0.7;\n          border: solid #000 3px;\n        }\n        .murophoto-frame > h5 {\n          position: absolute;\n          margin: 15px;\n          bottom: 30px;\n          text-align: right;\n          width: 90%;\n        }\n        .murophoto-frame > p {\n          position: absolute;\n          bottom: 5px;\n          margin: 15px;\n          font-size: 0.8em;\n          text-align: right;\n          width: 90%;\n        }\n        .murophoto {\n          width: 100%;\n        }\n        '
         ),
         Photos,
-        _react2.default.createElement(_SearchInfo2.default, null)
+        _react2.default.createElement(_SearchInfo2.default, { onChangeSwitch: this.props.onChangeSwitch })
       );
     }
   }]);
@@ -779,7 +835,8 @@ PhotoPage.propTypes = {
   searchRadius: _react2.default.PropTypes.number,
   searchEndpointUrl: _react2.default.PropTypes.string,
   onSelectPhoto: _react2.default.PropTypes.func,
-  onLoadPhotos: _react2.default.PropTypes.func
+  onLoadPhotos: _react2.default.PropTypes.func,
+  onChangeSwitch: _react2.default.PropTypes.func
 };
 
 PhotoPage.displayName = 'PhotoPage';
@@ -946,9 +1003,9 @@ var SearchInfo = function (_React$Component) {
         ),
         _react2.default.createElement(_reactBootstrapSwitch2.default, {
           defaultValue: true,
-          bsSize: "small"
-          //onChange={this.props.onChangeSwitch}
-          , onText: "徒歩",
+          bsSize: "small",
+          onChange: this.props.onChangeSwitch,
+          onText: "徒歩",
           offText: "自動車",
           offColor: "warning"
         })
