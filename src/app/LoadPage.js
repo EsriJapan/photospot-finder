@@ -45,6 +45,7 @@ class LoadPage extends React.Component {
             max-height: 100%;
           }
         `}</style>
+        <img className="kujiran-load" src="img/loading.svg" />
         <img className="kujiran-load" src="img/colorkujiran-with-shadow-s.png" />
       </div>
     );

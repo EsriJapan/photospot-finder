@@ -40,10 +40,11 @@ class PhotoPage extends React.Component {
   getPhotos (error, featureCollection, response) {
     console.log('PhotoPage.getPhoto: ', featureCollection, response);
     let photos = [];
+    let getAttachments = [];
 
     photos = featureCollection.features.map(function (f, i) {
       const attachmentReqUrl = this.props.searchEndpointUrl + '/' + f.properties.OBJECTID + '/attachments';
-      L.esri.request(attachmentReqUrl, {}, function(error, response) {
+      const getAttachment = L.esri.request(attachmentReqUrl, {}, function(error, response) {
         if(error){
           console.log(error);
         } else {
@@ -52,7 +53,15 @@ class PhotoPage extends React.Component {
           this.setState({ photos: photos });
         }
       }.bind(this));
+      getAttachments.push(getAttachment);
       return f;
+    }.bind(this));
+
+    Promise.all(getAttachments).then(function () {
+      console.log('PhotoPage.getAttachments: done!');
+      setTimeout(function () {
+        this.props.onLoadPhotos();
+      }.bind(this), 1500);
     }.bind(this));
   }
 
@@ -94,6 +103,11 @@ class PhotoPage extends React.Component {
           color: #fff;
           text-shadow: 1px 1px 1px #333, -1px 1px 1px #333, 1px -1px 1px #333, -1px -1px 1px #333;
           position: relative;
+          transition: all 0.3s;
+        }
+        .murophoto-frame:hover {
+          opacity: 0.7;
+          border: solid #000 3px;
         }
         .murophoto-frame > h5 {
           position: absolute;
@@ -125,7 +139,8 @@ PhotoPage.propTypes = {
   location: React.PropTypes.array,
   searchRadius: React.PropTypes.number,
   searchEndpointUrl: React.PropTypes.string,
-  onSelectPhoto: React.PropTypes.func
+  onSelectPhoto: React.PropTypes.func,
+  onLoadPhotos: React.PropTypes.func
 };
 
 PhotoPage.displayName = 'PhotoPage';

@@ -30,24 +30,25 @@ import { Mediator } from '../';
 class App extends Mediator {
   constructor (props) {
       super(props);
-      this.state.user = {
-        currentPosition: [42.315, 140.982]
-      }
-      this.state.loadPage = {
-        visibility: true
-      }
-      this.state.photoPage = {
-        visibility: true,
-        searchRadius: 10000,
-        searchEndpointUrl: '//services.arcgis.com/wlVTGRSYTzAbjjiC/arcgis/rest/services/photospot_muroran/FeatureServer/0'
-      };
-      this.state.mapPage = {
-        visibility: false,
-        route: false,
-        routeTime: 0,
-        routeDistance: 0,
-        destination: ''
-      };
+
+      // User State
+      this.state.userCurrentPosition = [42.315, 140.982];
+
+      // LoadPage State
+      this.state.loadPageVisibility = true;
+
+      // PhotoPage State
+      this.state.photoPageVisibility = false;
+      this.state.photoPageSearchRadius = 10000;
+      this.state.photoPageSearchEndpointUrl = '//services.arcgis.com/wlVTGRSYTzAbjjiC/arcgis/rest/services/photospot_muroran/FeatureServer/0';
+
+      // MapPage State
+      this.state.mapPageVisibility = false;
+      this.state.mapPageRoute = false;
+      this.state.mapPageRouteTime = 0;
+      this.state.mapPageRouteDistance = 0;
+      this.state.mapPageDestination = '';
+
       this.userIcon = L.icon({
         iconUrl: 'img/user.png',
         iconSize: [32, 32],
@@ -65,53 +66,29 @@ class App extends Mediator {
       };
       this.routeLayer = null;
       this.onSelectPhoto = this.onSelectPhoto.bind(this);
+      this.onLoadPhotos = this.onLoadPhotos.bind(this);
       this.getRoute = this.getRoute.bind(this);
       this.showMapPage = this.showMapPage.bind(this);
       this.showPhotoPage = this.showPhotoPage.bind(this);
+      this.hideLoadPage = this.hideLoadPage.bind(this);
   }
 
   readyComponents () {
     const map = this.state.map;
     map.invalidateSize();
 
-    // 開発用
-    this.setState({
-      photoPage: {
-        visibility: false,
-        searchRadius: 10000,
-        searchEndpointUrl: '//services.arcgis.com/wlVTGRSYTzAbjjiC/arcgis/rest/services/photospot_muroran/FeatureServer/0'
-      },
-      mapPage: {
-        visibility: false
-      }
-    });
-    setTimeout(function () {
-      this.setState({
-        photoPage: {
-          visibility: true,
-          searchRadius: 10000,
-          searchEndpointUrl: '//services.arcgis.com/wlVTGRSYTzAbjjiC/arcgis/rest/services/photospot_muroran/FeatureServer/0'
-        },
-        loadPage: {
-          visibility: false
-        }
-      });
-    }.bind(this), 3000);
-
     const userIcon = this.userIcon;
-    this.userLayer = L.marker(this.state.user.currentPosition, {
+    this.userLayer = L.marker(this.state.userCurrentPosition, {
       icon: userIcon
     }).addTo(map);
   }
 
   getGeolocation (position) {
     console.log('App.geoGeolocation: ', position);
-    const userInitState = {
-      currentPosition: [42.315, 140.982]
-      //currentPosition: [position.coords.latitude, position.coords.longitude]
-    };
+    const userCurrentPosition = [42.315, 140.982]; // 開発用
+    //const userCurrentPosition = [position.coords.latitude, position.coords.longitude];
     this.setState({
-      user: userInitState
+      userCurrentPosition: userCurrentPosition
     });
   }
 
@@ -123,7 +100,7 @@ class App extends Mediator {
     console.log(data);
     const routeEndpointUrl = 'https://utility.arcgis.com/usrsvcs/appservices/GfNovy4yk5xdJ9b4/rest/services/World/Route/NAServer/Route_World';
     const photoSpotLocation = data.geometry.coordinates;
-    const userLocation = [this.state.user.currentPosition[1], this.state.user.currentPosition[0]];
+    const userLocation = [this.state.userCurrentPosition[1], this.state.userCurrentPosition[0]];
     /*const gpService = L.esri.GP.service({
       url: routeEndpointUrl,
       useCors: false
@@ -145,6 +122,11 @@ class App extends Mediator {
     this.showMapPage();
   }
 
+  onLoadPhotos () {
+    this.hideLoadPage();
+    this.showPhotoPage();
+  }
+
   getRoute (routes, destination) {
     console.log('App.getRoute: ', routes);
     const routeGeoJSON = L.esri.Util.arcgisToGeoJSON(routes.features[0]);
@@ -152,12 +134,10 @@ class App extends Mediator {
     const map = this.state.map;
 
     this.setState({
-      mapPage: {
-        route: true,
-        routeTime: Math.round(routeGeoJSON.properties.Total_TravelTime),
-        routeDistance: Math.round(routeGeoJSON.properties.Total_Kilometers * 100) / 100,
-        destination: destination
-      }
+      mapPageRoute: true,
+      mapPageRouteTime: Math.round(routeGeoJSON.properties.Total_TravelTime),
+      mapPageRouteDistance: Math.round(routeGeoJSON.properties.Total_Kilometers * 100) / 100,
+      mapPageDestination: destination
     });
 
     if (this.routeLayer !== null) {
@@ -179,27 +159,29 @@ class App extends Mediator {
 
   showMapPage () {
     this.setState({
-      photoPage: {
-        visibility: false,
-        searchRadius: 10000,
-        searchEndpointUrl: '//services.arcgis.com/wlVTGRSYTzAbjjiC/arcgis/rest/services/photospot_muroran/FeatureServer/0'
-      },
-      mapPage: {
-        visibility: true
-      }
+      photoPageVisibility: false,
+      mapPageVisibility: true
     });
   }
 
   showPhotoPage () {
     this.setState({
-      photoPage: {
-        visibility: true,
-        searchRadius: 10000,
-        searchEndpointUrl: '//services.arcgis.com/wlVTGRSYTzAbjjiC/arcgis/rest/services/photospot_muroran/FeatureServer/0'
-      },
-      mapPage: {
-        visibility: false
-      }
+      photoPageVisibility: true,
+      mapPageVisibility: false
+    });
+  }
+
+  showLoadPage () {
+    this.setState({
+      loadPageVisibility: true,
+      photoPageVisibility: false,
+      mapPageVisibility: false
+    });
+  }
+
+  hideLoadPage () {
+    this.setState({
+      loadPageVisibility: false
     });
   }
 
@@ -276,9 +258,9 @@ class App extends Mediator {
         <Grid className="main-contents">
           <Row className="offset-top">
             <Col xs={12} md={12}>
-              <LoadPage visibility={this.state.loadPage.visibility} />
-              <PhotoPage visibility={this.state.photoPage.visibility} searchRadius={this.state.photoPage.searchRadius} location={this.state.user.currentPosition} searchEndpointUrl={this.state.photoPage.searchEndpointUrl} onSelectPhoto={this.onSelectPhoto} />
-              <MapPage visibility={this.state.mapPage.visibility} mapid={this.props.mapid} route={this.state.mapPage.route} routeTime={this.state.mapPage.routeTime} routeDistance={this.state.mapPage.routeDistance} destination={this.state.mapPage.destination} />
+              <LoadPage visibility={this.state.loadPageVisibility} />
+              <PhotoPage visibility={this.state.photoPageVisibility} searchRadius={this.state.photoPageSearchRadius} location={this.state.userCurrentPosition} searchEndpointUrl={this.state.photoPageSearchEndpointUrl} onSelectPhoto={this.onSelectPhoto} onLoadPhotos={this.onLoadPhotos} />
+              <MapPage visibility={this.state.mapPageVisibility} mapid={this.props.mapid} route={this.state.mapPageRoute} routeTime={this.state.mapPageRouteTime} routeDistance={this.state.mapPageRouteDistance} destination={this.state.mapPageDestination} />
             </Col>
           </Row>
         </Grid>
