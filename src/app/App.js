@@ -24,6 +24,7 @@ import { Navbar, Nav, NavItem, NavDropdown, MenuItem, Grid, Row, Col, Glyphicon 
 import LoadPage from './LoadPage';
 import MapPage from './MapPage';
 import PhotoPage from './PhotoPage';
+import SpotFormPage from './SpotFormPage';
 
 import { Mediator } from '../';
 
@@ -49,6 +50,10 @@ class App extends Mediator {
       this.state.mapPageRouteDistance = 0;
       this.state.mapPageDestination = '';
 
+      // SpotFormPage State
+      this.state.spotformPageVisibility = false;
+      this.state.spotformPageUrl = 'http://ej.maps.arcgis.com/apps/GeoForm/index.html?appid=9dd92be784fe4f3f8d5a70624781e3d1';
+
       this.userIcon = L.icon({
         iconUrl: 'img/user.png',
         iconSize: [32, 32],
@@ -70,6 +75,7 @@ class App extends Mediator {
       this.getRoute = this.getRoute.bind(this);
       this.showMapPage = this.showMapPage.bind(this);
       this.showPhotoPage = this.showPhotoPage.bind(this);
+      this.showSpotFormPage = this.showSpotFormPage.bind(this);
       this.hideLoadPage = this.hideLoadPage.bind(this);
   }
 
@@ -160,7 +166,8 @@ class App extends Mediator {
   showMapPage () {
     this.setState({
       photoPageVisibility: false,
-      mapPageVisibility: true
+      mapPageVisibility: true,
+      spotformPageVisibility: false
     });
     const map = this.state.map;
     map.invalidateSize(true);
@@ -170,7 +177,16 @@ class App extends Mediator {
   showPhotoPage () {
     this.setState({
       photoPageVisibility: true,
-      mapPageVisibility: false
+      mapPageVisibility: false,
+      spotformPageVisibility: false
+    });
+  }
+
+  showSpotFormPage () {
+    this.setState({
+      photoPageVisibility: false,
+      mapPageVisibility: false,
+      spotformPageVisibility: true
     });
   }
 
@@ -250,7 +266,9 @@ class App extends Mediator {
             <Nav>
               <NavItem eventKey={1} href="#" onClick={this.showPhotoPage}><Glyphicon glyph="picture" /> 写真</NavItem>
               <NavItem eventKey={2} href="#" onClick={this.showMapPage}><Glyphicon glyph="map-marker" /> 地図</NavItem>
-              <NavItem eventKey={3} href="https://github.com/EsriJapan/photospot-finder">GitHub</NavItem>
+              <NavItem eventKey={3} href="#" onClick={this.showSpotFormPage}><Glyphicon glyph="send" /> 写真スポットの投稿</NavItem>
+              <NavItem eventKey={4} href="#"><Glyphicon glyph="send" /> くじらんスポットの投稿 (作成中)</NavItem>
+              <NavItem eventKey={5} href="https://github.com/EsriJapan/photospot-finder">GitHub</NavItem>
             </Nav>
           </Navbar.Collapse>
         </Navbar>
@@ -260,6 +278,7 @@ class App extends Mediator {
               <LoadPage visibility={this.state.loadPageVisibility} />
               <PhotoPage visibility={this.state.photoPageVisibility} searchRadius={this.state.photoPageSearchRadius} location={this.state.userCurrentPosition} searchEndpointUrl={this.state.photoPageSearchEndpointUrl} onSelectPhoto={this.onSelectPhoto} onLoadPhotos={this.onLoadPhotos} />
               <MapPage visibility={this.state.mapPageVisibility} mapid={this.props.mapid} route={this.state.mapPageRoute} routeTime={this.state.mapPageRouteTime} routeDistance={this.state.mapPageRouteDistance} destination={this.state.mapPageDestination} />
+              <SpotFormPage visibility={this.state.spotformPageVisibility} url={this.state.spotformPageUrl} />
             </Col>
           </Row>
         </Grid>
