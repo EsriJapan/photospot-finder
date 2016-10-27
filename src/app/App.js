@@ -208,19 +208,13 @@ class App extends Mediator {
     return (
       <div>
         <style type="text/css">{`
-        nav > div.container {
-
-        }
-        .col-xs-12 {
-
+        html, body {
+          background-color: #222;
         }
         .fixed-nav {
             position: fixed;
             width: 100%;
             z-index: 99998;
-        }
-        .main-contents {
-
         }
         .offset-top {
             margin-top: 51px;
