@@ -34,7 +34,7 @@ class MapPage extends React.Component {
     }
 
     return (
-      <div className="mappage" style={{ visibility: visibility, position: 'absolute', top: 0, width: 'calc(100% - 30px)' }}>
+      <div className="mappage" style={{ visibility: visibility, position: 'absolute', top: 0, width: '100%', marginLeft: '-15px' }}>
         <style type="text/css">{`
         .route-info {
           color: #fff;

@@ -97,7 +97,7 @@ class PhotoPage extends React.Component {
     }.bind(this));
 
     return (
-      <div style={{ display: visibility }}>
+      <div className="photopage" style={{ display: visibility, position: 'absolute', top: 0, width: '100%', marginLeft: '-15px' }}>
         <style type="text/css">{`
         .murophoto-frame {
           color: #fff;

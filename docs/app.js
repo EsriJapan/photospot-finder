@@ -258,7 +258,7 @@ var App = function (_Mediator) {
         _react2.default.createElement(
           'style',
           { type: 'text/css' },
-          '\n        nav > div.container {\n          margin-right: 15px;\n          margin-left: 15px;\n        }\n        .col-xs-12 {\n          padding-left: 0;\n          padding-right: 0;\n        }\n        .fixed-nav {\n            position: fixed;\n            width: 100%;\n            z-index: 99998;\n        }\n        .main-contents {\n          padding-right: 0;\n          padding-left: 0;\n        }\n        .offset-top {\n            margin-top: 50px;\n        }\n        div.leaflet-esri-webmap-layer2-label-pane > div.esri-leaflet-webmap-labels {\n          margin-left: 0 !important;\n          margin-top: -9px !important;\n          color: rgb(255,127,127) !important;\n        }\n        .route-path {\n          -webkit-animation: dash 10s linear forwards;\n          animation: dash 10s linear forwards;\n        }\n        @-webkit-keyframes dash {\n          to {\n            stroke-dashoffset: 0;\n          }\n        }\n        @keyframes dash {\n          to {\n            stroke-dashoffset: 0;\n          }\n        }\n        '
+          '\n        nav > div.container {\n\n        }\n        .col-xs-12 {\n\n        }\n        .fixed-nav {\n            position: fixed;\n            width: 100%;\n            z-index: 99998;\n        }\n        .main-contents {\n\n        }\n        .offset-top {\n            margin-top: 51px;\n        }\n        div.leaflet-esri-webmap-layer2-label-pane > div.esri-leaflet-webmap-labels {\n          margin-left: 0 !important;\n          margin-top: -9px !important;\n          color: rgb(255,127,127) !important;\n        }\n        .route-path {\n          -webkit-animation: dash 10s linear forwards;\n          animation: dash 10s linear forwards;\n        }\n        @-webkit-keyframes dash {\n          to {\n            stroke-dashoffset: 0;\n          }\n        }\n        @keyframes dash {\n          to {\n            stroke-dashoffset: 0;\n          }\n        }\n        '
         ),
         _react2.default.createElement(
           _reactBootstrap.Navbar,
@@ -285,13 +285,13 @@ var App = function (_Mediator) {
               null,
               _react2.default.createElement(
                 _reactBootstrap.NavItem,
-                { eventKey: 1, href: '#photopage', onClick: this.showPhotoPage },
+                { eventKey: 1, href: '#', onClick: this.showPhotoPage },
                 _react2.default.createElement(_reactBootstrap.Glyphicon, { glyph: 'picture' }),
                 ' \u5199\u771F'
               ),
               _react2.default.createElement(
                 _reactBootstrap.NavItem,
-                { eventKey: 2, href: '#mappage', onClick: this.showMapPage },
+                { eventKey: 2, href: '#', onClick: this.showMapPage },
                 _react2.default.createElement(_reactBootstrap.Glyphicon, { glyph: 'map-marker' }),
                 ' \u5730\u56F3'
               ),
@@ -386,7 +386,7 @@ var LoadPage = function (_React$Component) {
 
       return _react2.default.createElement(
         'div',
-        { style: { display: visibility, height: '100%', width: '100%', background: '#333', position: 'ralative' } },
+        { style: { display: visibility, position: 'absolute', top: 0, width: '100%', marginLeft: '-15px', height: window.innerHeight - 50 + 'px' } },
         _react2.default.createElement(
           'style',
           { type: 'text/css' },
@@ -472,7 +472,7 @@ var MapPage = function (_React$Component) {
 
       return _react2.default.createElement(
         'div',
-        { className: 'mappage', style: { visibility: visibility, position: 'absolute', top: 0, width: 'calc(100% - 30px)' } },
+        { className: 'mappage', style: { visibility: visibility, position: 'absolute', top: 0, width: '100%', marginLeft: '-15px' } },
         _react2.default.createElement(
           'style',
           { type: 'text/css' },
@@ -720,7 +720,7 @@ var PhotoPage = function (_React$Component) {
 
       return _react2.default.createElement(
         'div',
-        { style: { display: visibility } },
+        { className: 'photopage', style: { display: visibility, position: 'absolute', top: 0, width: '100%', marginLeft: '-15px' } },
         _react2.default.createElement(
           'style',
           { type: 'text/css' },

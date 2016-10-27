@@ -32,7 +32,7 @@ class LoadPage extends React.Component {
     }
 
     return (
-      <div style={{ display: visibility, height: '100%', width: '100%', background: '#333', position: 'ralative' }}>
+      <div style={{ display: visibility, position: 'absolute', top: 0, width: '100%', marginLeft: '-15px', height: window.innerHeight - 50 + 'px' }}>
         <style type="text/css">{`
           img.kujiran-load {
             position: absolute;

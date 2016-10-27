@@ -209,12 +209,10 @@ class App extends Mediator {
       <div>
         <style type="text/css">{`
         nav > div.container {
-          margin-right: 15px;
-          margin-left: 15px;
+
         }
         .col-xs-12 {
-          padding-left: 0;
-          padding-right: 0;
+
         }
         .fixed-nav {
             position: fixed;
@@ -222,11 +220,10 @@ class App extends Mediator {
             z-index: 99998;
         }
         .main-contents {
-          padding-right: 0;
-          padding-left: 0;
+
         }
         .offset-top {
-            margin-top: 50px;
+            margin-top: 51px;
         }
         div.leaflet-esri-webmap-layer2-label-pane > div.esri-leaflet-webmap-labels {
           margin-left: 0 !important;
@@ -257,8 +254,8 @@ class App extends Mediator {
           </Navbar.Header>
           <Navbar.Collapse>
             <Nav>
-              <NavItem eventKey={1} href="#photopage" onClick={this.showPhotoPage}><Glyphicon glyph="picture" /> 写真</NavItem>
-              <NavItem eventKey={2} href="#mappage" onClick={this.showMapPage}><Glyphicon glyph="map-marker" /> 地図</NavItem>
+              <NavItem eventKey={1} href="#" onClick={this.showPhotoPage}><Glyphicon glyph="picture" /> 写真</NavItem>
+              <NavItem eventKey={2} href="#" onClick={this.showMapPage}><Glyphicon glyph="map-marker" /> 地図</NavItem>
               <NavItem eventKey={3} href="https://github.com/EsriJapan/photospot-finder">GitHub</NavItem>
             </Nav>
           </Navbar.Collapse>
