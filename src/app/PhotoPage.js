@@ -21,6 +21,7 @@
 import React from 'react';
 import { Button, Glyphicon } from 'react-bootstrap';
 import PhotoLayout from './PhotoPage/PhotoLayout';
+import SearchInfo from './PhotoPage/SearchInfo';
 
 class PhotoPage extends React.Component {
   constructor (props) {
@@ -129,6 +130,7 @@ class PhotoPage extends React.Component {
         }
         `}</style>
         {Photos}
+        <SearchInfo />
       </div>
     );
   }
