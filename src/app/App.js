@@ -75,7 +75,7 @@ class App extends Mediator {
 
   readyComponents () {
     const map = this.state.map;
-    map.invalidateSize();
+    map.invalidateSize(true);
 
     const userIcon = this.userIcon;
     this.userLayer = L.marker(this.state.userCurrentPosition, {
@@ -162,6 +162,9 @@ class App extends Mediator {
       photoPageVisibility: false,
       mapPageVisibility: true
     });
+    const map = this.state.map;
+    map.invalidateSize(true);
+    setTimeout(function () {map.invalidateSize(true);}, 2000);
   }
 
   showPhotoPage () {
@@ -206,7 +209,12 @@ class App extends Mediator {
       <div>
         <style type="text/css">{`
         nav > div.container {
-          padding-right: 30px;
+          margin-right: 15px;
+          margin-left: 15px;
+        }
+        .col-xs-12 {
+          padding-left: 0;
+          padding-right: 0;
         }
         .fixed-nav {
             position: fixed;
