@@ -305,7 +305,7 @@ class App extends Mediator {
         <Navbar inverse className="fixed-nav">
           <Navbar.Header>
             <Navbar.Brand>
-              <a href="#">Photo Spot Finder</a>
+              <a href="#"><img src="img/icon.png" style={{ position: 'absolute', width: '42px', marginTop: '-8px' }} /> <span style={{ color: '#fff', fontWeight: 'bold', marginLeft: '56px' }}>PhotoSpot</span> Finder</a>
             </Navbar.Brand>
             <Navbar.Toggle />
           </Navbar.Header>

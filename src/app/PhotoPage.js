@@ -109,7 +109,7 @@ class PhotoPage extends React.Component {
         }
         .murophoto-frame:hover {
           opacity: 0.8;
-          border: solid #000 3px;
+          border: solid #333 3px;
         }
         .to-route {
           position: absolute;
