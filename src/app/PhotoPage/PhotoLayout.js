@@ -19,7 +19,7 @@
 // THE SOFTWARE.
 
 import React from 'react';
-import { Button, Glyphicon } from 'react-bootstrap';
+import { Label, Glyphicon } from 'react-bootstrap';
 
 class PhotoLayout extends React.Component {
   constructor (props) {
@@ -32,12 +32,27 @@ class PhotoLayout extends React.Component {
   }
 
   render () {
+    let NewLabel = null;
+    let routeViewCount = this.props.routeViewCount;
+    const date = new Date();
+    const now = date.getTime();
+    const def = now - this.props.time;
+
+    console.log(this.props.title, def);
+    
+    if (def < 86400000) {
+      NewLabel = (<Label bsStyle="danger">New</Label>);
+    }
+    if (routeViewCount === null || routeViewCount === undefined) {
+      routeViewCount = 0;
+    }
+
     return (
       <div className="murophoto-frame">
         <img src={this.props.imgUrl} className="murophoto" />
         <h5>{this.props.title}</h5>
         <p>by. {this.props.name}</p>
-        <div className="route-view-count"><Glyphicon glyph="eye-open" /> {this.props.routeViewCount}</div>
+        <div className="route-view-count"><Glyphicon glyph="eye-open" /> {routeViewCount} {NewLabel}</div>
         <div className="to-route" onClick={this._onSelectPhoto}><Glyphicon glyph="globe" /> ルート検索を開始する</div>
       </div>
     );

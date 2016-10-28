@@ -163,6 +163,9 @@ class PhotoPage extends React.Component {
           text-align: left;
           width: 90%;
         }
+        .route-view-count > .label {
+          text-shadow: none;
+        }
         .murophoto {
           width: 100%;
         }

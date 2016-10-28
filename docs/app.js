@@ -831,7 +831,7 @@ var PhotoPage = function (_React$Component) {
         _react2.default.createElement(
           'style',
           { type: 'text/css' },
-          '\n        .murophoto-frame {\n          color: #fff;\n          text-shadow: 1px 1px 1px #333, -1px 1px 1px #333, 1px -1px 1px #333, -1px -1px 1px #333;\n          position: relative;\n          transition: all 0.3s;\n        }\n        .murophoto-frame:hover {\n          opacity: 0.8;\n          border: solid #000 3px;\n        }\n        .to-route {\n          position: absolute;\n          top: 0;\n          left: 0;\n          right: 0;\n          bottom: 0;\n          margin: auto;\n          height: 28px;\n          width: 150px;\n          padding-top: 7px;\n          color: #fff;\n          font-weight: bold;\n          background-color: #333;\n          border-radius: 15px;\n          border: solid 1px #999;\n          text-shadow: none;\n          text-align: center;\n          font-size: 0.7em;\n          opacity: 0;\n          transition: all 0.3s;\n          cursor: pointer;\n        }\n        .to-route:hover {\n          color: #333;\n          background-color: #fff;\n          border: solid 1px #fff;\n        }\n        .murophoto-frame:hover > div.to-route {\n          opacity: 1;\n        }\n        .murophoto-frame > h5 {\n          position: absolute;\n          margin: 15px;\n          bottom: 30px;\n          text-align: right;\n          width: 90%;\n        }\n        .murophoto-frame > p {\n          position: absolute;\n          bottom: 5px;\n          margin: 15px;\n          font-size: 0.8em;\n          text-align: right;\n          width: 90%;\n        }\n        .route-view-count {\n          position: absolute;\n          margin: 15px;\n          top: 0;\n          text-align: left;\n          width: 90%;\n        }\n        .murophoto {\n          width: 100%;\n        }\n        '
+          '\n        .murophoto-frame {\n          color: #fff;\n          text-shadow: 1px 1px 1px #333, -1px 1px 1px #333, 1px -1px 1px #333, -1px -1px 1px #333;\n          position: relative;\n          transition: all 0.3s;\n        }\n        .murophoto-frame:hover {\n          opacity: 0.8;\n          border: solid #000 3px;\n        }\n        .to-route {\n          position: absolute;\n          top: 0;\n          left: 0;\n          right: 0;\n          bottom: 0;\n          margin: auto;\n          height: 28px;\n          width: 150px;\n          padding-top: 7px;\n          color: #fff;\n          font-weight: bold;\n          background-color: #333;\n          border-radius: 15px;\n          border: solid 1px #999;\n          text-shadow: none;\n          text-align: center;\n          font-size: 0.7em;\n          opacity: 0;\n          transition: all 0.3s;\n          cursor: pointer;\n        }\n        .to-route:hover {\n          color: #333;\n          background-color: #fff;\n          border: solid 1px #fff;\n        }\n        .murophoto-frame:hover > div.to-route {\n          opacity: 1;\n        }\n        .murophoto-frame > h5 {\n          position: absolute;\n          margin: 15px;\n          bottom: 30px;\n          text-align: right;\n          width: 90%;\n        }\n        .murophoto-frame > p {\n          position: absolute;\n          bottom: 5px;\n          margin: 15px;\n          font-size: 0.8em;\n          text-align: right;\n          width: 90%;\n        }\n        .route-view-count {\n          position: absolute;\n          margin: 15px;\n          top: 0;\n          text-align: left;\n          width: 90%;\n        }\n        .route-view-count > .label {\n          text-shadow: none;\n        }\n        .murophoto {\n          width: 100%;\n        }\n        '
         ),
         Photos,
         _react2.default.createElement(_SearchInfo2.default, { onChangeSwitch: this.props.onChangeSwitch })
@@ -916,6 +916,25 @@ var PhotoLayout = function (_React$Component) {
   }, {
     key: 'render',
     value: function render() {
+      var NewLabel = null;
+      var routeViewCount = this.props.routeViewCount;
+      var date = new Date();
+      var now = date.getTime();
+      var def = now - this.props.time;
+
+      console.log(this.props.title, def);
+
+      if (def < 86400000) {
+        NewLabel = _react2.default.createElement(
+          _reactBootstrap.Label,
+          { bsStyle: 'danger' },
+          'New'
+        );
+      }
+      if (routeViewCount === null || routeViewCount === undefined) {
+        routeViewCount = 0;
+      }
+
       return _react2.default.createElement(
         'div',
         { className: 'murophoto-frame' },
@@ -936,7 +955,9 @@ var PhotoLayout = function (_React$Component) {
           { className: 'route-view-count' },
           _react2.default.createElement(_reactBootstrap.Glyphicon, { glyph: 'eye-open' }),
           ' ',
-          this.props.routeViewCount
+          routeViewCount,
+          ' ',
+          NewLabel
         ),
         _react2.default.createElement(
           'div',
