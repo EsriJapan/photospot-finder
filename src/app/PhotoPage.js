@@ -107,7 +107,7 @@ class PhotoPage extends React.Component {
           transition: all 0.3s;
         }
         .murophoto-frame:hover {
-          opacity: 0.7;
+          opacity: 0.8;
           border: solid #000 3px;
         }
         .to-route {
@@ -117,12 +117,22 @@ class PhotoPage extends React.Component {
           right: 0;
           bottom: 0;
           margin: auto;
-          height: 10%;
-          width: 100%;
+          height: 28px;
+          width: 150px;
+          padding-top: 6px;
+          color: #fff;
+          font-weight: bold;
+          background-color: #333;
+          border-radius: 15px;
+          text-shadow: none;
           text-align: center;
           font-size: 0.7em;
           opacity: 0;
-          transition: opacity 0.3s;
+          transition: all 0.3s;
+        }
+        .to-route:hover {
+          color: #333;
+          background-color: #fff;
         }
         .murophoto-frame:hover > div.to-route {
           opacity: 1;

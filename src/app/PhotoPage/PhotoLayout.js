@@ -33,11 +33,11 @@ class PhotoLayout extends React.Component {
 
   render () {
     return (
-      <div className="murophoto-frame" onClick={this._onSelectPhoto}>
+      <div className="murophoto-frame">
         <img src={this.props.imgUrl} className="murophoto" />
         <h5>{this.props.title}</h5>
         <p>by. {this.props.name}</p>
-        <div className="to-route"><Glyphicon glyph="globe" /> ルート検索を開始する</div>
+        <div className="to-route" onClick={this._onSelectPhoto}><Glyphicon glyph="globe" /> ルート検索を開始する</div>
       </div>
     );
   }
