@@ -90,8 +90,8 @@ var App = function (_Mediator) {
 
     _this.userIcon = L.icon({
       iconUrl: 'img/user.png',
-      iconSize: [32, 32],
-      iconAnchor: [16, 32]
+      iconSize: [17, 44],
+      iconAnchor: [9, 44]
     });
     _this.userLayer = null;
     _this.routeStyle = {

@@ -57,8 +57,8 @@ class App extends Mediator {
 
       this.userIcon = L.icon({
         iconUrl: 'img/user.png',
-        iconSize: [32, 32],
-        iconAnchor: [16, 32]
+        iconSize: [17, 44],
+        iconAnchor: [9, 44]
       });
       this.userLayer = null;
       this.routeStyle = {
