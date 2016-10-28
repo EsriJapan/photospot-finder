@@ -37,6 +37,7 @@ class PhotoLayout extends React.Component {
         <img src={this.props.imgUrl} className="murophoto" />
         <h5>{this.props.title}</h5>
         <p>by. {this.props.name}</p>
+        <div className="route-view-count"><Glyphicon glyph="eye-open" /> {this.props.routeViewCount}</div>
         <div className="to-route" onClick={this._onSelectPhoto}><Glyphicon glyph="globe" /> ルート検索を開始する</div>
       </div>
     );
@@ -50,6 +51,7 @@ PhotoLayout.propTypes = {
   comment: React.PropTypes.string,
   time: React.PropTypes.number,
   data: React.PropTypes.object,
+  routeViewCount: React.PropTypes.number,
   onSelectPhoto: React.PropTypes.func
 };
 

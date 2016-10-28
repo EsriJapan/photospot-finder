@@ -104,6 +104,8 @@ var App = function (_Mediator) {
       className: 'route-path'
     };
     _this.routeLayer = null;
+    _this.photospotLayer = L.esri.featureLayer({ url: _this.state.photoPageSearchEndpointUrl });
+    _this.updateRouteViewCount = _this.updateRouteViewCount.bind(_this);
     _this.onSelectPhoto = _this.onSelectPhoto.bind(_this);
     _this.onLoadPhotos = _this.onLoadPhotos.bind(_this);
     _this.onChangeSwitch = _this.onChangeSwitch.bind(_this);
@@ -142,6 +144,14 @@ var App = function (_Mediator) {
       alert('現在地を取得できません');
     }
   }, {
+    key: 'updateRouteViewCount',
+    value: function updateRouteViewCount(data) {
+      data.properties.route_view_count += 1;
+      this.photospotLayer.updateFeature(data, function (response) {
+        console.log(response);
+      });
+    }
+  }, {
     key: 'onSelectPhoto',
     value: function onSelectPhoto(data) {
       console.log(data);
@@ -149,6 +159,8 @@ var App = function (_Mediator) {
       var photoSpotLocation = data.geometry.coordinates;
       var userLocation = [this.state.userCurrentPosition[1], this.state.userCurrentPosition[0]];
       var routeParams = void 0;
+
+      this.updateRouteViewCount(data);
 
       if (this.state.travelMode === 1) {
         routeParams = {
@@ -807,6 +819,7 @@ var PhotoPage = function (_React$Component) {
           comment: p.properties.comment_text,
           time: p.properties.report_time,
           data: p,
+          routeViewCount: p.properties.route_view_count,
           onSelectPhoto: this.props.onSelectPhoto,
           key: "murophoto_" + i
         });
@@ -818,7 +831,7 @@ var PhotoPage = function (_React$Component) {
         _react2.default.createElement(
           'style',
           { type: 'text/css' },
-          '\n        .murophoto-frame {\n          color: #fff;\n          text-shadow: 1px 1px 1px #333, -1px 1px 1px #333, 1px -1px 1px #333, -1px -1px 1px #333;\n          position: relative;\n          transition: all 0.3s;\n        }\n        .murophoto-frame:hover {\n          opacity: 0.8;\n          border: solid #000 3px;\n        }\n        .to-route {\n          position: absolute;\n          top: 0;\n          left: 0;\n          right: 0;\n          bottom: 0;\n          margin: auto;\n          height: 28px;\n          width: 150px;\n          padding-top: 7px;\n          color: #fff;\n          font-weight: bold;\n          background-color: #333;\n          border-radius: 15px;\n          border: solid 1px #999;\n          text-shadow: none;\n          text-align: center;\n          font-size: 0.7em;\n          opacity: 0;\n          transition: all 0.3s;\n          cursor: pointer;\n        }\n        .to-route:hover {\n          color: #333;\n          background-color: #fff;\n          border: solid 1px #fff;\n        }\n        .murophoto-frame:hover > div.to-route {\n          opacity: 1;\n        }\n        .murophoto-frame > h5 {\n          position: absolute;\n          margin: 15px;\n          bottom: 30px;\n          text-align: right;\n          width: 90%;\n        }\n        .murophoto-frame > p {\n          position: absolute;\n          bottom: 5px;\n          margin: 15px;\n          font-size: 0.8em;\n          text-align: right;\n          width: 90%;\n        }\n        .murophoto {\n          width: 100%;\n        }\n        '
+          '\n        .murophoto-frame {\n          color: #fff;\n          text-shadow: 1px 1px 1px #333, -1px 1px 1px #333, 1px -1px 1px #333, -1px -1px 1px #333;\n          position: relative;\n          transition: all 0.3s;\n        }\n        .murophoto-frame:hover {\n          opacity: 0.8;\n          border: solid #000 3px;\n        }\n        .to-route {\n          position: absolute;\n          top: 0;\n          left: 0;\n          right: 0;\n          bottom: 0;\n          margin: auto;\n          height: 28px;\n          width: 150px;\n          padding-top: 7px;\n          color: #fff;\n          font-weight: bold;\n          background-color: #333;\n          border-radius: 15px;\n          border: solid 1px #999;\n          text-shadow: none;\n          text-align: center;\n          font-size: 0.7em;\n          opacity: 0;\n          transition: all 0.3s;\n          cursor: pointer;\n        }\n        .to-route:hover {\n          color: #333;\n          background-color: #fff;\n          border: solid 1px #fff;\n        }\n        .murophoto-frame:hover > div.to-route {\n          opacity: 1;\n        }\n        .murophoto-frame > h5 {\n          position: absolute;\n          margin: 15px;\n          bottom: 30px;\n          text-align: right;\n          width: 90%;\n        }\n        .murophoto-frame > p {\n          position: absolute;\n          bottom: 5px;\n          margin: 15px;\n          font-size: 0.8em;\n          text-align: right;\n          width: 90%;\n        }\n        .route-view-count {\n          position: absolute;\n          margin: 15px;\n          top: 0;\n          text-align: left;\n          width: 90%;\n        }\n        .murophoto {\n          width: 100%;\n        }\n        '
         ),
         Photos,
         _react2.default.createElement(_SearchInfo2.default, { onChangeSwitch: this.props.onChangeSwitch })
@@ -920,6 +933,13 @@ var PhotoLayout = function (_React$Component) {
         ),
         _react2.default.createElement(
           'div',
+          { className: 'route-view-count' },
+          _react2.default.createElement(_reactBootstrap.Glyphicon, { glyph: 'eye-open' }),
+          ' ',
+          this.props.routeViewCount
+        ),
+        _react2.default.createElement(
+          'div',
           { className: 'to-route', onClick: this._onSelectPhoto },
           _react2.default.createElement(_reactBootstrap.Glyphicon, { glyph: 'globe' }),
           ' \u30EB\u30FC\u30C8\u691C\u7D22\u3092\u958B\u59CB\u3059\u308B'
@@ -938,6 +958,7 @@ PhotoLayout.propTypes = {
   comment: _react2.default.PropTypes.string,
   time: _react2.default.PropTypes.number,
   data: _react2.default.PropTypes.object,
+  routeViewCount: _react2.default.PropTypes.number,
   onSelectPhoto: _react2.default.PropTypes.func
 };
 

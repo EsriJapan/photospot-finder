@@ -91,6 +91,7 @@ class PhotoPage extends React.Component {
           comment={p.properties.comment_text} 
           time={p.properties.report_time} 
           data={p} 
+          routeViewCount={p.properties.route_view_count}
           onSelectPhoto={this.props.onSelectPhoto}
           key={"murophoto_" + i} 
         />
@@ -153,6 +154,13 @@ class PhotoPage extends React.Component {
           margin: 15px;
           font-size: 0.8em;
           text-align: right;
+          width: 90%;
+        }
+        .route-view-count {
+          position: absolute;
+          margin: 15px;
+          top: 0;
+          text-align: left;
           width: 90%;
         }
         .murophoto {

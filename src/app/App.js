@@ -71,6 +71,8 @@ class App extends Mediator {
         className: 'route-path'
       };
       this.routeLayer = null;
+      this.photospotLayer = L.esri.featureLayer({ url: this.state.photoPageSearchEndpointUrl });
+      this.updateRouteViewCount = this.updateRouteViewCount.bind(this);
       this.onSelectPhoto = this.onSelectPhoto.bind(this);
       this.onLoadPhotos = this.onLoadPhotos.bind(this);
       this.onChangeSwitch = this.onChangeSwitch.bind(this);
@@ -104,12 +106,21 @@ class App extends Mediator {
     alert('現在地を取得できません');
   }
 
+  updateRouteViewCount (data) {
+    data.properties.route_view_count += 1;
+    this.photospotLayer.updateFeature(data, function (response) {
+      console.log(response);
+    });
+  }
+
   onSelectPhoto (data) {
     console.log(data);
     const routeEndpointUrl = 'https://utility.arcgis.com/usrsvcs/appservices/GfNovy4yk5xdJ9b4/rest/services/World/Route/NAServer/Route_World';
     const photoSpotLocation = data.geometry.coordinates;
     const userLocation = [this.state.userCurrentPosition[1], this.state.userCurrentPosition[0]];
     let routeParams;
+
+    this.updateRouteViewCount(data);
 
     if (this.state.travelMode === 1) {
       routeParams = {
