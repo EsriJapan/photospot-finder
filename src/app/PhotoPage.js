@@ -169,6 +169,12 @@ class PhotoPage extends React.Component {
         .murophoto {
           width: 100%;
         }
+        .bootstrap-switch {
+          border-radius: 16px;
+        }
+        .bootstrap-switch.bootstrap-switch-small .bootstrap-switch-handle-on, .bootstrap-switch.bootstrap-switch-small .bootstrap-switch-handle-off, .bootstrap-switch.bootstrap-switch-small .bootstrap-switch-label {
+          border-radius: 14px;
+        }
         `}</style>
         {Photos}
         <SearchInfo onChangeSwitch={this.props.onChangeSwitch} />
