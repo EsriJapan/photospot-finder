@@ -161,6 +161,12 @@ var App = function (_Mediator) {
 
       this.userLayer.addTo(map);
 
+      var routeInfoString = this.loadRoute();
+      if (routeInfoString !== null) {
+        var routeInfo = JSON.parse(routeInfoString);
+        this.getRoute(routeInfo.routes, routeInfo.destination);
+      }
+
       if (_config2.default.map.geolocation === false) {
         var dammyPosition = {
           coords: {
@@ -280,9 +286,17 @@ var App = function (_Mediator) {
       var routeTime = void 0;
 
       if (this.state.travelMode === 0) {
-        routeTime = Math.round(routeGeoJSON.properties.Total_WalkTime);
+        if (routeGeoJSON.properties.Total_WalkTime !== undefined) {
+          routeTime = Math.round(routeGeoJSON.properties.Total_WalkTime);
+        } else if (routeGeoJSON.properties.Total_TravelTime !== undefined) {
+          routeTime = Math.round(routeGeoJSON.properties.Total_TravelTime);
+        }
       } else if (this.state.travelMode === 1) {
-        routeTime = Math.round(routeGeoJSON.properties.Total_TravelTime);
+        if (routeGeoJSON.properties.Total_TravelTime !== undefined) {
+          routeTime = Math.round(routeGeoJSON.properties.Total_TravelTime);
+        } else if (routeGeoJSON.properties.Total_WalkTime !== undefined) {
+          routeTime = Math.round(routeGeoJSON.properties.Total_WalkTime);
+        }
       }
 
       this.setState({
@@ -307,6 +321,27 @@ var App = function (_Mediator) {
       }
 
       this.routeLayer.addData(routeGeoJSON);
+
+      this.saveRoute(routes, destination);
+    }
+  }, {
+    key: 'saveRoute',
+    value: function saveRoute(routes, destination) {
+      var routeInfo = {
+        routes: routes,
+        destination: destination
+      };
+      var routeInfoString = JSON.stringify(routeInfo);
+      localStorage.setItem('photospot-finder-route', routeInfoString);
+    }
+  }, {
+    key: 'loadRoute',
+    value: function loadRoute() {
+      console.log('App.loadRoute', localStorage.getItem('photospot-finder-route'));
+
+      var routeInfoString = localStorage.getItem('photospot-finder-route');
+
+      return routeInfoString;
     }
   }, {
     key: 'showMapPage',

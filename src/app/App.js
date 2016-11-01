@@ -123,6 +123,12 @@ class App extends Mediator {
 
     this.userLayer.addTo(map);
 
+    const routeInfoString = this.loadRoute();
+    if (routeInfoString !== null) {
+      const routeInfo = JSON.parse(routeInfoString);
+      this.getRoute(routeInfo.routes, routeInfo.destination);
+    }
+
     if (appConfig.map.geolocation === false) {
       const dammyPosition = {
         coords: {
@@ -235,9 +241,17 @@ class App extends Mediator {
     let routeTime;
 
     if (this.state.travelMode === 0) {
-      routeTime = Math.round(routeGeoJSON.properties.Total_WalkTime);
+      if (routeGeoJSON.properties.Total_WalkTime !== undefined) {
+        routeTime = Math.round(routeGeoJSON.properties.Total_WalkTime);
+      } else if (routeGeoJSON.properties.Total_TravelTime !== undefined) {
+        routeTime = Math.round(routeGeoJSON.properties.Total_TravelTime);
+      }
     } else if (this.state.travelMode === 1) {
-      routeTime = Math.round(routeGeoJSON.properties.Total_TravelTime);
+      if (routeGeoJSON.properties.Total_TravelTime !== undefined) {
+        routeTime = Math.round(routeGeoJSON.properties.Total_TravelTime);
+      } else if (routeGeoJSON.properties.Total_WalkTime !== undefined) {
+        routeTime = Math.round(routeGeoJSON.properties.Total_WalkTime);
+      }
     }
 
     this.setState({
@@ -262,6 +276,25 @@ class App extends Mediator {
     }
 
     this.routeLayer.addData(routeGeoJSON);
+
+    this.saveRoute(routes, destination);
+  }
+
+  saveRoute (routes, destination) {
+    const routeInfo = {
+      routes: routes,
+      destination: destination
+    };
+    const routeInfoString = JSON.stringify(routeInfo);
+    localStorage.setItem('photospot-finder-route', routeInfoString);
+  }
+
+  loadRoute () {
+    console.log('App.loadRoute', localStorage.getItem('photospot-finder-route'));
+
+    const routeInfoString = localStorage.getItem('photospot-finder-route');
+    
+    return routeInfoString;
   }
 
   showMapPage () {
