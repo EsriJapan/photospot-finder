@@ -1376,13 +1376,23 @@ exports.default = SpotFormPage;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+var demo = true;
+var urlParams = location.search.substring(1).split('&');
+urlParams.forEach(function (urlParam) {
+  console.log(urlParam);
+  if (urlParam === 'demo') {
+    demo = false;
+  }
+});
+console.log('appConfig geolocation: ', demo);
+
 var appConfig = exports.appConfig = {
   map: {
     id: '956c47b1c2ea40a0b6530b3bb64af437',
     default: {
       center: [42.315, 140.982]
     },
-    geolocation: false
+    geolocation: demo
   },
   photoSearch: {
     radius: 2500,
@@ -1447,13 +1457,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 console.log('appConfig: ', _config2.default);
 
 var mapid = _config2.default.map.id;
-var urlParams = location.hash.substring(1).split('&');
-urlParams.forEach(function (urlParam) {
-  var param = urlParam.split('=');
-  if (param[0] === 'mapid') {
-    mapid = param[1];
-  }
-});
 
 var appContents = _react2.default.createElement(
   'main',

@@ -1,10 +1,20 @@
+let demo = true;
+const urlParams = location.search.substring(1).split('&');
+urlParams.forEach(function (urlParam) {
+  console.log(urlParam);
+  if (urlParam === 'demo') {
+    demo = false
+  }
+});
+console.log('appConfig geolocation: ', demo);
+
 export const appConfig = {
   map: {
     id: '956c47b1c2ea40a0b6530b3bb64af437',
     default: {
       center: [42.315, 140.982]
     },
-    geolocation: false
+    geolocation: demo
   },
   photoSearch: {
     radius: 2500,

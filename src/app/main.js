@@ -31,13 +31,6 @@ import appConfig from './config';
 console.log('appConfig: ', appConfig);
 
 let mapid = appConfig.map.id;
-const urlParams = location.hash.substring(1).split('&');
-urlParams.forEach(function (urlParam) {
-  var param = urlParam.split('=');
-  if (param[0] === 'mapid') {
-    mapid = param[1]
-  }
-});
 
 const appContents = (
   <main>
