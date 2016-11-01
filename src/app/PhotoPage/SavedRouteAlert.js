@@ -43,7 +43,7 @@ class SavedRouteAlert extends React.Component {
           color: #fff;
           background-color: #000;
           opacity: 0.8;
-          font-size: 0.9em;
+          font-size: 0.8em;
           text-align: center;
           border: 1px solid transparent;
           border-radius: 4px;
