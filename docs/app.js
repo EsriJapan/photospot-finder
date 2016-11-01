@@ -168,7 +168,7 @@ var App = function (_Mediator) {
             longitude: this.state.userCurrentPosition[1]
           }
         };
-        this.getGeolocation();
+        this.getGeolocation(dammyPosition);
       }
     }
   }, {
@@ -210,7 +210,7 @@ var App = function (_Mediator) {
     key: 'onSelectPhoto',
     value: function onSelectPhoto(data) {
       console.log(data);
-      var routeEndpointUrl = 'https://utility.arcgis.com/usrsvcs/appservices/GfNovy4yk5xdJ9b4/rest/services/World/Route/NAServer/Route_World';
+      var routeEndpointUrl = _config2.default.route.endpointUrl;
       var photoSpotLocation = data.geometry.coordinates;
       var userLocation = [this.state.userCurrentPosition[1], this.state.userCurrentPosition[0]];
       var routeParams = void 0;
@@ -248,9 +248,11 @@ var App = function (_Mediator) {
     }
   }, {
     key: 'onLoadPhotos',
-    value: function onLoadPhotos() {
+    value: function onLoadPhotos(initialLoad) {
       this.hideLoadPage();
-      //this.showPhotoPage();
+      if (initialLoad === true) {
+        this.showPhotoPage();
+      }
     }
   }, {
     key: 'onChangeSwitch',
@@ -815,6 +817,7 @@ var PhotoPage = function (_React$Component) {
     _this.state = {
       photos: []
     };
+    _this.initialLoad = true;
     return _this;
   }
 
@@ -851,7 +854,8 @@ var PhotoPage = function (_React$Component) {
       Promise.all(getAttachments).then(function () {
         console.log('PhotoPage.getAttachments: done!');
         setTimeout(function () {
-          this.props.onLoadPhotos();
+          this.props.onLoadPhotos(this.initialLoad);
+          this.initialLoad = false;
         }.bind(this), 1500);
       }.bind(this));
     }
@@ -1222,11 +1226,14 @@ var appConfig = exports.appConfig = {
     default: {
       center: [42.315, 140.982]
     },
-    geolocation: true
+    geolocation: false
   },
   photoSearch: {
     radius: 2500,
     endpointUrl: '//services.arcgis.com/wlVTGRSYTzAbjjiC/arcgis/rest/services/photospot_muroran/FeatureServer/0'
+  },
+  route: {
+    endpointUrl: '//utility.arcgis.com/usrsvcs/appservices/GfNovy4yk5xdJ9b4/rest/services/World/Route/NAServer/Route_World'
   },
   spotformApp: {
     url: '//www.arcgis.com/apps/GeoForm/index.html?appid=9dd92be784fe4f3f8d5a70624781e3d1'

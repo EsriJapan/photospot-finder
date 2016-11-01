@@ -130,7 +130,7 @@ class App extends Mediator {
           longitude: this.state.userCurrentPosition[1]
         }
       };
-      this.getGeolocation();
+      this.getGeolocation(dammyPosition);
     }
   }
 
@@ -168,7 +168,7 @@ class App extends Mediator {
 
   onSelectPhoto (data) {
     console.log(data);
-    const routeEndpointUrl = 'https://utility.arcgis.com/usrsvcs/appservices/GfNovy4yk5xdJ9b4/rest/services/World/Route/NAServer/Route_World';
+    const routeEndpointUrl = appConfig.route.endpointUrl;
     const photoSpotLocation = data.geometry.coordinates;
     const userLocation = [this.state.userCurrentPosition[1], this.state.userCurrentPosition[0]];
     let routeParams;
@@ -205,9 +205,11 @@ class App extends Mediator {
     this.showMapPage();
   }
 
-  onLoadPhotos () {
+  onLoadPhotos (initialLoad) {
     this.hideLoadPage();
-    //this.showPhotoPage();
+    if (initialLoad === true) {
+      this.showPhotoPage();
+    }
   }
 
   onChangeSwitch (element, state) {

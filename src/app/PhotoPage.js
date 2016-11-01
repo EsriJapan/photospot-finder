@@ -29,6 +29,7 @@ class PhotoPage extends React.Component {
       this.state = {
         photos: []
       }
+      this.initialLoad = true;
   }
 
   searchPhotos (url, center, radius) {
@@ -61,7 +62,8 @@ class PhotoPage extends React.Component {
     Promise.all(getAttachments).then(function () {
       console.log('PhotoPage.getAttachments: done!');
       setTimeout(function () {
-        this.props.onLoadPhotos();
+        this.props.onLoadPhotos(this.initialLoad);
+        this.initialLoad = false;
       }.bind(this), 1500);
     }.bind(this));
   }
