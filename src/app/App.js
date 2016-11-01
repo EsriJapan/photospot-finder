@@ -45,6 +45,7 @@ class App extends Mediator {
       this.state.photoPageSearchRadius = appConfig.photoSearch.radius;
       this.state.photoPageSearchEndpointUrl = appConfig.photoSearch.endpointUrl;
       this.state.travelMode = 0; // 0: walk, 1: car
+      this.state.savedRoute = false;
 
       // MapPage State
       this.state.mapPageVisibility = false;
@@ -128,6 +129,10 @@ class App extends Mediator {
     if (routeInfoString !== null) {
       const routeInfo = JSON.parse(routeInfoString);
       this.getRoute(routeInfo.routes, routeInfo.destination);
+      this.setState({ savedRoute: true });
+      setTimeout(function () {
+        this.setState({ savedRoute: false });
+      }.bind(this), 15000);
     }
 
     if (appConfig.map.geolocation === false) {
@@ -463,6 +468,8 @@ class App extends Mediator {
                 onSelectPhoto={this.onSelectPhoto} 
                 onLoadPhotos={this.onLoadPhotos} 
                 onChangeSwitch={this.onChangeSwitch} 
+                hasSavedRoute={this.state.savedRoute} 
+                onClickSavedRouteShowButton={this.showMapPage} 
               />
               <MapPage 
                 visibility={this.state.mapPageVisibility} 

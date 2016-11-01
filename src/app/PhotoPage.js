@@ -22,6 +22,7 @@ import React from 'react';
 import { Button, Glyphicon } from 'react-bootstrap';
 import PhotoLayout from './PhotoPage/PhotoLayout';
 import SearchInfo from './PhotoPage/SearchInfo';
+import SavedRouteAlert from './PhotoPage/SavedRouteAlert';
 
 class PhotoPage extends React.Component {
   constructor (props) {
@@ -82,6 +83,11 @@ class PhotoPage extends React.Component {
     let visibility = 'block';
     if (this.props.visibility === false) {
       visibility = 'none';
+    }
+
+    let Alert = null;
+    if (this.props.hasSavedRoute === true) {
+      Alert = (<SavedRouteAlert onClickButton={this.props.onClickSavedRouteShowButton} />);
     }
 
     const Photos = this.state.photos.map(function (p, i) {
@@ -178,6 +184,7 @@ class PhotoPage extends React.Component {
           border-radius: 14px;
         }
         `}</style>
+        {Alert}
         {Photos}
         <SearchInfo onChangeSwitch={this.props.onChangeSwitch} />
       </div>
@@ -192,7 +199,9 @@ PhotoPage.propTypes = {
   searchEndpointUrl: React.PropTypes.string,
   onSelectPhoto: React.PropTypes.func,
   onLoadPhotos: React.PropTypes.func,
-  onChangeSwitch: React.PropTypes.func
+  onChangeSwitch: React.PropTypes.func,
+  hasSavedRoute: React.PropTypes.bool,
+  onClickSavedRouteShowButton: React.PropTypes.func
 };
 
 PhotoPage.displayName = 'PhotoPage';
