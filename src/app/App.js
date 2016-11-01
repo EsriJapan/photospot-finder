@@ -28,20 +28,22 @@ import SpotFormPage from './SpotFormPage';
 
 import { Mediator } from '../';
 
+import appConfig from './config';
+
 class App extends Mediator {
   constructor (props) {
       super(props);
 
       // User State
-      this.state.userCurrentPosition = [42.315, 140.982];
+      this.state.userCurrentPosition = appConfig.map.default.center;
 
       // LoadPage State
       this.state.loadPageVisibility = true;
 
       // PhotoPage State
       this.state.photoPageVisibility = false;
-      this.state.photoPageSearchRadius = 2500;
-      this.state.photoPageSearchEndpointUrl = '//services.arcgis.com/wlVTGRSYTzAbjjiC/arcgis/rest/services/photospot_muroran/FeatureServer/0';
+      this.state.photoPageSearchRadius = appConfig.photoSearch.radius;
+      this.state.photoPageSearchEndpointUrl = appConfig.photoSearch.endpointUrl;
       this.state.travelMode = 0; // 0: walk, 1: car
 
       // MapPage State
@@ -53,7 +55,7 @@ class App extends Mediator {
 
       // SpotFormPage State
       this.state.spotformPageVisibility = false;
-      this.state.spotformPageUrl = '//www.arcgis.com/apps/GeoForm/index.html?appid=9dd92be784fe4f3f8d5a70624781e3d1';
+      this.state.spotformPageUrl = appConfig.spotformApp.url;
 
       /*this.userIcon = L.icon({
         iconUrl: 'img/user.png',
@@ -92,7 +94,7 @@ class App extends Mediator {
           strokeWidth: 0.5
         }
       });
-      this.userLayer = null;
+      this.userLayer = L.featureGroup([]);
       this.routeStyle = {
         color: 'rgb(255, 100, 0)',
         weight: 7,
@@ -119,21 +121,35 @@ class App extends Mediator {
     const map = this.state.map;
     map.invalidateSize(true);
 
-    const userIcon = this.userIcon;
-    const userIconBorder = this.userIconBorder;
-    const userMarker = L.marker(this.state.userCurrentPosition, {
-      icon: userIcon
-    });
-    const userBorderMarker = L.marker(this.state.userCurrentPosition, {
-      icon: userIconBorder
-    });
-    this.userLayer = L.featureGroup([userBorderMarker, userMarker]).addTo(map);
+    this.userLayer.addTo(map);
+
+    if (appConfig.map.geolocation === false) {
+      const dammyPosition = {
+        coords: {
+          latitude: this.state.userCurrentPosition[0],
+          longitude: this.state.userCurrentPosition[1]
+        }
+      };
+      this.getGeolocation();
+    }
   }
 
   getGeolocation (position) {
     console.log('App.geoGeolocation: ', position);
-    const userCurrentPosition = [42.315, 140.982]; // 開発用
-    //const userCurrentPosition = [position.coords.latitude, position.coords.longitude];
+    const userCurrentPosition = [position.coords.latitude, position.coords.longitude];
+
+    this.userLayer.clearLayers();
+    const userIcon = this.userIcon;
+    const userIconBorder = this.userIconBorder;
+    const userMarker = L.marker(userCurrentPosition, {
+      icon: userIcon
+    });
+    const userBorderMarker = L.marker(userCurrentPosition, {
+      icon: userIconBorder
+    });
+    this.userLayer.addLayer(userBorderMarker);
+    this.userLayer.addLayer(userMarker);
+
     this.setState({
       userCurrentPosition: userCurrentPosition
     });
@@ -191,7 +207,7 @@ class App extends Mediator {
 
   onLoadPhotos () {
     this.hideLoadPage();
-    this.showPhotoPage();
+    //this.showPhotoPage();
   }
 
   onChangeSwitch (element, state) {
@@ -289,11 +305,13 @@ class App extends Mediator {
   }
 
   componentWillMount () {
-    let location = [];
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(this.getGeolocation.bind(this), this.errorGeolocation.bind(this));
-    } else {
-      alert('現在地を取得できません');
+    if (appConfig.map.geolocation === true) {
+      let location = [];
+      if (navigator.geolocation) {
+        navigator.geolocation.watchPosition(this.getGeolocation.bind(this), this.errorGeolocation.bind(this));
+      } else {
+        alert('現在地を取得できません');
+      }
     }
   }
 
