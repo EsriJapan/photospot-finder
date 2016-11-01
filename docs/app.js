@@ -895,32 +895,36 @@ var PhotoPage = function (_React$Component) {
   }, {
     key: 'getPhotos',
     value: function getPhotos(error, featureCollection, response) {
-      console.log('PhotoPage.getPhoto: ', featureCollection, response);
+      console.log('PhotoPage.getPhotos: ', featureCollection, response);
       var photos = [];
       var getAttachments = [];
 
-      photos = featureCollection.features.map(function (f, i) {
-        var attachmentReqUrl = this.props.searchEndpointUrl + '/' + f.properties.OBJECTID + '/attachments';
-        var getAttachment = L.esri.request(attachmentReqUrl, {}, function (error, response) {
-          if (error) {
-            console.log(error);
-          } else {
-            console.log(response);
-            photos[i].url = attachmentReqUrl + '/' + response.attachmentInfos[0].id;
-            this.setState({ photos: photos });
-          }
+      if (featureCollection.features.length > 0) {
+        photos = featureCollection.features.map(function (f, i) {
+          var attachmentReqUrl = this.props.searchEndpointUrl + '/' + f.properties.OBJECTID + '/attachments';
+          var getAttachment = L.esri.request(attachmentReqUrl, {}, function (error, response) {
+            if (error) {
+              console.log(error);
+            } else {
+              console.log(response);
+              photos[i].url = attachmentReqUrl + '/' + response.attachmentInfos[0].id;
+              this.setState({ photos: photos });
+            }
+          }.bind(this));
+          getAttachments.push(getAttachment);
+          return f;
         }.bind(this));
-        getAttachments.push(getAttachment);
-        return f;
-      }.bind(this));
 
-      Promise.all(getAttachments).then(function () {
-        console.log('PhotoPage.getAttachments: done!');
-        setTimeout(function () {
-          this.props.onLoadPhotos(this.initialLoad);
-          this.initialLoad = false;
-        }.bind(this), 1500);
-      }.bind(this));
+        Promise.all(getAttachments).then(function () {
+          console.log('PhotoPage.getAttachments: done!');
+          setTimeout(function () {
+            this.props.onLoadPhotos(this.initialLoad);
+            this.initialLoad = false;
+          }.bind(this), 1500);
+        }.bind(this));
+      } else {
+        this.setState({ photos: photos });
+      }
     }
   }, {
     key: 'componentWillMount',
@@ -947,19 +951,22 @@ var PhotoPage = function (_React$Component) {
         Alert = _react2.default.createElement(_SavedRouteAlert2.default, { onClickButton: this.props.onClickSavedRouteShowButton });
       }
 
-      var Photos = this.state.photos.map(function (p, i) {
-        return _react2.default.createElement(_PhotoLayout2.default, {
-          imgUrl: p.url,
-          name: p.properties.reporter_name,
-          title: p.properties.title,
-          comment: p.properties.comment_text,
-          time: p.properties.report_time,
-          data: p,
-          routeViewCount: p.properties.route_view_count,
-          onSelectPhoto: this.props.onSelectPhoto,
-          key: "murophoto_" + i
-        });
-      }.bind(this));
+      var Photos = null;
+      if (this.state.photos.length > 0) {
+        Photos = this.state.photos.map(function (p, i) {
+          return _react2.default.createElement(_PhotoLayout2.default, {
+            imgUrl: p.url,
+            name: p.properties.reporter_name,
+            title: p.properties.title,
+            comment: p.properties.comment_text,
+            time: p.properties.report_time,
+            data: p,
+            routeViewCount: p.properties.route_view_count,
+            onSelectPhoto: this.props.onSelectPhoto,
+            key: "murophoto_" + i
+          });
+        }.bind(this));
+      }
 
       return _react2.default.createElement(
         'div',

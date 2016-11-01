@@ -41,32 +41,37 @@ class PhotoPage extends React.Component {
   }
 
   getPhotos (error, featureCollection, response) {
-    console.log('PhotoPage.getPhoto: ', featureCollection, response);
+    console.log('PhotoPage.getPhotos: ', featureCollection, response);
     let photos = [];
     let getAttachments = [];
 
-    photos = featureCollection.features.map(function (f, i) {
-      const attachmentReqUrl = this.props.searchEndpointUrl + '/' + f.properties.OBJECTID + '/attachments';
-      const getAttachment = L.esri.request(attachmentReqUrl, {}, function(error, response) {
-        if(error){
-          console.log(error);
-        } else {
-          console.log(response);
-          photos[i].url = attachmentReqUrl + '/' + response.attachmentInfos[0].id;
-          this.setState({ photos: photos });
-        }
+    if (featureCollection.features.length > 0) {
+      photos = featureCollection.features.map(function (f, i) {
+        const attachmentReqUrl = this.props.searchEndpointUrl + '/' + f.properties.OBJECTID + '/attachments';
+        const getAttachment = L.esri.request(attachmentReqUrl, {}, function(error, response) {
+          if(error){
+            console.log(error);
+          } else {
+            console.log(response);
+            photos[i].url = attachmentReqUrl + '/' + response.attachmentInfos[0].id;
+            this.setState({ photos: photos });
+          }
+        }.bind(this));
+        getAttachments.push(getAttachment);
+        return f;
       }.bind(this));
-      getAttachments.push(getAttachment);
-      return f;
-    }.bind(this));
 
-    Promise.all(getAttachments).then(function () {
-      console.log('PhotoPage.getAttachments: done!');
-      setTimeout(function () {
-        this.props.onLoadPhotos(this.initialLoad);
-        this.initialLoad = false;
-      }.bind(this), 1500);
-    }.bind(this));
+      Promise.all(getAttachments).then(function () {
+        console.log('PhotoPage.getAttachments: done!');
+        setTimeout(function () {
+          this.props.onLoadPhotos(this.initialLoad);
+          this.initialLoad = false;
+        }.bind(this), 1500);
+      }.bind(this));
+    } else {
+      this.setState({ photos: photos });
+    }
+    
   }
 
   componentWillMount () {
@@ -90,21 +95,24 @@ class PhotoPage extends React.Component {
       Alert = (<SavedRouteAlert onClickButton={this.props.onClickSavedRouteShowButton} />);
     }
 
-    const Photos = this.state.photos.map(function (p, i) {
-      return (
-        <PhotoLayout 
-          imgUrl={p.url} 
-          name={p.properties.reporter_name}
-          title={p.properties.title} 
-          comment={p.properties.comment_text} 
-          time={p.properties.report_time} 
-          data={p} 
-          routeViewCount={p.properties.route_view_count}
-          onSelectPhoto={this.props.onSelectPhoto}
-          key={"murophoto_" + i} 
-        />
-      );
-    }.bind(this));
+    let Photos = null;
+    if (this.state.photos.length > 0) {
+      Photos = this.state.photos.map(function (p, i) {
+        return (
+          <PhotoLayout 
+            imgUrl={p.url} 
+            name={p.properties.reporter_name}
+            title={p.properties.title} 
+            comment={p.properties.comment_text} 
+            time={p.properties.report_time} 
+            data={p} 
+            routeViewCount={p.properties.route_view_count}
+            onSelectPhoto={this.props.onSelectPhoto}
+            key={"murophoto_" + i} 
+          />
+        );
+      }.bind(this));
+    }
 
     return (
       <div className="photopage" style={{ display: visibility, position: 'absolute', top: 0, width: '100%', marginLeft: '-15px' }}>
