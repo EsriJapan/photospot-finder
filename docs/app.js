@@ -95,13 +95,13 @@ var App = function (_Mediator) {
     });*/
     _this.userIcon = L.vectorIcon({
       className: 'user-icon',
-      svgHeight: 32,
-      svgWidth: 32,
+      svgHeight: 48,
+      svgWidth: 48,
       type: 'circle',
       shape: {
         r: '6',
-        cx: '16',
-        cy: '16'
+        cx: '24',
+        cy: '24'
       },
       style: {
         fill: '#006ad1',
@@ -111,18 +111,18 @@ var App = function (_Mediator) {
     });
     _this.userIconBorder = L.vectorIcon({
       className: 'user-icon-border',
-      svgHeight: 32,
-      svgWidth: 32,
+      svgHeight: 48,
+      svgWidth: 48,
       type: 'circle',
       shape: {
         r: '6',
-        cx: '16',
-        cy: '16'
+        cx: '24',
+        cy: '24'
       },
       style: {
         fill: '#1e90ff',
         stroke: '#1e90ff',
-        strokeWidth: 1
+        strokeWidth: 0.5
       }
     });
     _this.userLayer = null;
@@ -364,7 +364,7 @@ var App = function (_Mediator) {
         _react2.default.createElement(
           'style',
           { type: 'text/css' },
-          '\n        html, body {\n          background-color: #222;\n        }\n        .fixed-nav {\n            position: fixed;\n            width: 100%;\n            z-index: 99998;\n        }\n        .offset-top {\n            margin-top: 51px;\n        }\n        div.leaflet-esri-webmap-layer2-label-pane > div.esri-leaflet-webmap-labels {\n          margin-left: 0 !important;\n          margin-top: -9px !important;\n          color: rgb(255,127,127) !important;\n        }\n        .route-path {\n          -webkit-animation: dash 10s linear forwards;\n          animation: dash 10s linear forwards;\n        }\n        @-webkit-keyframes dash {\n          to {\n            stroke-dashoffset: 0;\n          }\n        }\n        @keyframes dash {\n          to {\n            stroke-dashoffset: 0;\n          }\n        }\n        .user-icon-border > svg > g > circle {\n          -webkit-animation-duration: 3s;\n          -webkit-animation-name: pulse;\n          -webkit-animation-iteration-count: infinite;\n          animation-duration: 3s;\n          animation-name: pulse;\n          animation-iteration-count: infinite;\n          fill-opacity: 0.3;\n        }\n        @-webkit-keyframes pulse {\n          0% {\n            transform-origin: 50% 50%;\n            transform: scale(1,1);\n            opacity: 1;\n          }\n          100% {\n            transform-origin: 50% 50%;\n            transform: scale(2,2);\n            opacity: 0.5;\n          }\n        }\n        @keyframes pulse {\n          0% {\n            transform-origin: 50% 50%;\n            transform: scale(1,1);\n            opacity: 1;\n          }\n          100% {\n            transform-origin: 50% 50%;\n            transform: scale(2,2);\n            opacity: 0.5;\n          }\n        }\n        '
+          '\n        html, body {\n          background-color: #222;\n        }\n        .fixed-nav {\n            position: fixed;\n            width: 100%;\n            z-index: 99998;\n        }\n        .offset-top {\n            margin-top: 51px;\n        }\n        div.leaflet-esri-webmap-layer2-label-pane > div.esri-leaflet-webmap-labels {\n          margin-left: 0 !important;\n          margin-top: -9px !important;\n          color: rgb(255,127,127) !important;\n        }\n        .route-path {\n          -webkit-animation: dash 10s linear forwards;\n          animation: dash 10s linear forwards;\n        }\n        @-webkit-keyframes dash {\n          to {\n            stroke-dashoffset: 0;\n          }\n        }\n        @keyframes dash {\n          to {\n            stroke-dashoffset: 0;\n          }\n        }\n        .user-icon-border > svg > g > circle {\n          -webkit-animation-duration: 3s;\n          -webkit-animation-name: pulse;\n          -webkit-animation-iteration-count: infinite;\n          animation-duration: 3s;\n          animation-name: pulse;\n          animation-iteration-count: infinite;\n          fill-opacity: 0.3;\n        }\n        @-webkit-keyframes pulse {\n          0% {\n            transform-origin: 50% 50%;\n            transform: scale(1,1);\n            opacity: 1;\n          }\n          100% {\n            transform-origin: 50% 50%;\n            transform: scale(3,3);\n            opacity: 0.5;\n          }\n        }\n        @keyframes pulse {\n          0% {\n            transform-origin: 50% 50%;\n            transform: scale(1,1);\n            opacity: 1;\n          }\n          100% {\n            transform-origin: 50% 50%;\n            transform: scale(3,3);\n            opacity: 0.5;\n          }\n        }\n        '
         ),
         _react2.default.createElement(
           _reactBootstrap.Navbar,

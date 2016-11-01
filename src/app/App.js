@@ -62,13 +62,13 @@ class App extends Mediator {
       });*/
       this.userIcon = L.vectorIcon({
         className: 'user-icon',
-        svgHeight: 32,
-        svgWidth: 32,
+        svgHeight: 48,
+        svgWidth: 48,
         type: 'circle',
         shape: {
           r: '6',
-          cx: '16',
-          cy: '16'
+          cx: '24',
+          cy: '24'
         },
         style: {
           fill: '#006ad1',
@@ -78,18 +78,18 @@ class App extends Mediator {
       });
       this.userIconBorder = L.vectorIcon({
         className: 'user-icon-border',
-        svgHeight: 32,
-        svgWidth: 32,
+        svgHeight: 48,
+        svgWidth: 48,
         type: 'circle',
         shape: {
           r: '6',
-          cx: '16',
-          cy: '16'
+          cx: '24',
+          cy: '24'
         },
         style: {
           fill: '#1e90ff',
           stroke: '#1e90ff',
-          strokeWidth: 1
+          strokeWidth: 0.5
         }
       });
       this.userLayer = null;
@@ -355,7 +355,7 @@ class App extends Mediator {
           }
           100% {
             transform-origin: 50% 50%;
-            transform: scale(2,2);
+            transform: scale(3,3);
             opacity: 0.5;
           }
         }
@@ -367,7 +367,7 @@ class App extends Mediator {
           }
           100% {
             transform-origin: 50% 50%;
-            transform: scale(2,2);
+            transform: scale(3,3);
             opacity: 0.5;
           }
         }
