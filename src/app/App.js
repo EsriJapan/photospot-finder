@@ -339,10 +339,19 @@ class App extends Mediator {
           }
         }
         .user-icon-border > svg > g > circle {
+          -webkit-animation-duration: 3s;
+          -webkit-animation-name: pulse;
+          -webkit-animation-iteration-count: infinite;
           animation-duration: 3s;
           animation-name: pulse;
           animation-iteration-count: infinite;
           fill-opacity: 0.3;
+        }
+        @-webkit-keyframes pulse {
+          to {
+            r: 15;
+            opacity: 0.5;
+          }
         }
         @keyframes pulse {
           to {
