@@ -349,7 +349,8 @@ class App extends Mediator {
         }
         @-webkit-keyframes pulse {
           to {
-            r: 15;
+            transform-origin: 50% 50%;
+            transform: scale(2,2);
             opacity: 0.5;
           }
         }
