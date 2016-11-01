@@ -360,8 +360,14 @@ class App extends Mediator {
           }
         }
         @keyframes pulse {
-          to {
-            r: 15;
+          0% {
+            transform-origin: 50% 50%;
+            transform: scale(1,1);
+            opacity: 1;
+          }
+          100% {
+            transform-origin: 50% 50%;
+            transform: scale(2,2);
             opacity: 0.5;
           }
         }
