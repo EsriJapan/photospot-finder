@@ -26,7 +26,11 @@ import App from './App';
 
 import { isReactDOMSupported } from '../lib/utils/react-utils';
 
-let mapid = '956c47b1c2ea40a0b6530b3bb64af437';
+import appConfig from './config';
+
+console.log('appConfig: ', appConfig);
+
+let mapid = appConfig.map.id;
 const urlParams = location.hash.substring(1).split('&');
 urlParams.forEach(function (urlParam) {
   var param = urlParam.split('=');
