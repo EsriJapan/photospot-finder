@@ -87,6 +87,7 @@ var App = function (_Mediator) {
     _this.state.mapPageRouteTime = 0;
     _this.state.mapPageRouteDistance = 0;
     _this.state.mapPageDestination = '';
+    _this.state.mapPageTravelMode = 0;
 
     // SpotFormPage State
     _this.state.spotformPageVisibility = false;
@@ -284,18 +285,23 @@ var App = function (_Mediator) {
       var routeStyle = this.routeStyle;
       var map = this.state.map;
       var routeTime = void 0;
+      var travelMode = void 0;
 
       if (this.state.travelMode === 0) {
+        travelMode = 0;
         if (routeGeoJSON.properties.Total_WalkTime !== undefined) {
           routeTime = Math.round(routeGeoJSON.properties.Total_WalkTime);
         } else if (routeGeoJSON.properties.Total_TravelTime !== undefined) {
           routeTime = Math.round(routeGeoJSON.properties.Total_TravelTime);
+          travelMode = 1;
         }
       } else if (this.state.travelMode === 1) {
+        travelMode = 1;
         if (routeGeoJSON.properties.Total_TravelTime !== undefined) {
           routeTime = Math.round(routeGeoJSON.properties.Total_TravelTime);
         } else if (routeGeoJSON.properties.Total_WalkTime !== undefined) {
           routeTime = Math.round(routeGeoJSON.properties.Total_WalkTime);
+          travelMode = 0;
         }
       }
 
@@ -303,7 +309,8 @@ var App = function (_Mediator) {
         mapPageRoute: true,
         mapPageRouteTime: routeTime,
         mapPageRouteDistance: Math.round(routeGeoJSON.properties.Total_Kilometers * 100) / 100,
-        mapPageDestination: destination
+        mapPageDestination: destination,
+        mapPageTravelMode: travelMode
       });
 
       if (this.routeLayer !== null) {
@@ -512,7 +519,8 @@ var App = function (_Mediator) {
                 route: this.state.mapPageRoute,
                 routeTime: this.state.mapPageRouteTime,
                 routeDistance: this.state.mapPageRouteDistance,
-                destination: this.state.mapPageDestination
+                destination: this.state.mapPageDestination,
+                travelMode: this.state.mapPageTravelMode
               }),
               _react2.default.createElement(_SpotFormPage2.default, {
                 visibility: this.state.spotformPageVisibility,
@@ -679,10 +687,10 @@ var MapPage = function (_React$Component) {
         _react2.default.createElement(
           'style',
           { type: 'text/css' },
-          '\n        .route-info {\n          color: #fff;\n          background-color: #000;\n          opacity: 0.7;\n          bottom: 16px;\n          width: 100%;\n          height: 100px;\n          position: absolute;\n          z-index: 999;\n        }\n        .route-info > h3 {\n          text-align: center;\n          width: 100%;\n          font-weight: 100;\n        }\n        .route-info > p {\n          margin-top: 10px;\n          margin-left: 15px;\n          font-weight: 100;\n        }\n        '
+          '\n        .route-info {\n          color: #fff;\n          background-color: #000;\n          opacity: 0.7;\n          bottom: 16px;\n          width: 100%;\n          height: 100px;\n          position: absolute;\n          z-index: 999;\n        }\n        .route-info > h3 {\n          text-align: center;\n          width: 100%;\n          font-weight: 100;\n        }\n        .route-info > p {\n          margin-top: 10px;\n          margin-left: 15px;\n          font-weight: 100;\n        }\n        .route-info > img {\n          position: absolute;\n          right: 0;\n          margin: 10px;\n          height: 20px;\n        }\n        '
         ),
         _react2.default.createElement(_.MapView, { mapid: this.props.mapid, height: window.innerHeight - 50 + "px" }),
-        _react2.default.createElement(_RouteInfo2.default, { route: this.props.route, time: this.props.routeTime, distance: this.props.routeDistance, destination: this.props.destination })
+        _react2.default.createElement(_RouteInfo2.default, { route: this.props.route, time: this.props.routeTime, distance: this.props.routeDistance, destination: this.props.destination, travelMode: this.props.travelMode })
       );
     }
   }]);
@@ -696,7 +704,8 @@ MapPage.propTypes = {
   route: _react2.default.PropTypes.bool,
   routeTime: _react2.default.PropTypes.number,
   routeDistance: _react2.default.PropTypes.number,
-  destination: _react2.default.PropTypes.string
+  destination: _react2.default.PropTypes.string,
+  travelMode: _react2.default.PropTypes.number
 };
 
 MapPage.displayName = 'MapPage';
@@ -757,10 +766,17 @@ var RouteInfo = function (_React$Component) {
       if (this.props.route === false) {
         visibility = 'none';
       }
+      var travelModeIcon = 'img/walk.png';
+      if (this.props.travelMode === 0) {
+        travelModeIcon = 'img/walk.png';
+      } else if (this.props.travelMode === 1) {
+        travelModeIcon = 'img/car.png';
+      }
 
       return _react2.default.createElement(
         'div',
         { className: 'route-info', style: { display: visibility } },
+        _react2.default.createElement('img', { src: travelModeIcon }),
         _react2.default.createElement(
           'p',
           null,
@@ -786,7 +802,8 @@ RouteInfo.propTypes = {
   route: _react2.default.PropTypes.bool,
   time: _react2.default.PropTypes.number,
   distance: _react2.default.PropTypes.number,
-  destination: _react2.default.PropTypes.string
+  destination: _react2.default.PropTypes.string,
+  travelMode: _react2.default.PropTypes.number
 };
 
 RouteInfo.displayName = 'RouteInfo';

@@ -30,9 +30,16 @@ class RouteInfo extends React.Component {
     if (this.props.route === false) {
       visibility = 'none';
     }
+    let travelModeIcon = 'img/walk.png';
+    if (this.props.travelMode === 0) {
+      travelModeIcon = 'img/walk.png';
+    } else if (this.props.travelMode === 1) {
+      travelModeIcon = 'img/car.png';
+    }
 
     return (
       <div className="route-info" style={{ display: visibility }}>
+        <img src={travelModeIcon} />
         <p>{this.props.destination} まで</p>
         <h3>{this.props.time} 分　|　{this.props.distance} km</h3>
       </div>
@@ -44,7 +51,8 @@ RouteInfo.propTypes = {
   route: React.PropTypes.bool,
   time: React.PropTypes.number,
   distance: React.PropTypes.number,
-  destination: React.PropTypes.string
+  destination: React.PropTypes.string,
+  travelMode: React.PropTypes.number
 };
 
 RouteInfo.displayName = 'RouteInfo';

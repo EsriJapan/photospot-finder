@@ -52,6 +52,7 @@ class App extends Mediator {
       this.state.mapPageRouteTime = 0;
       this.state.mapPageRouteDistance = 0;
       this.state.mapPageDestination = '';
+      this.state.mapPageTravelMode = 0;
 
       // SpotFormPage State
       this.state.spotformPageVisibility = false;
@@ -239,18 +240,23 @@ class App extends Mediator {
     const routeStyle = this.routeStyle;
     const map = this.state.map;
     let routeTime;
+    let travelMode;
 
     if (this.state.travelMode === 0) {
+      travelMode = 0;
       if (routeGeoJSON.properties.Total_WalkTime !== undefined) {
         routeTime = Math.round(routeGeoJSON.properties.Total_WalkTime);
       } else if (routeGeoJSON.properties.Total_TravelTime !== undefined) {
         routeTime = Math.round(routeGeoJSON.properties.Total_TravelTime);
+        travelMode = 1;
       }
     } else if (this.state.travelMode === 1) {
+      travelMode = 1;
       if (routeGeoJSON.properties.Total_TravelTime !== undefined) {
         routeTime = Math.round(routeGeoJSON.properties.Total_TravelTime);
       } else if (routeGeoJSON.properties.Total_WalkTime !== undefined) {
         routeTime = Math.round(routeGeoJSON.properties.Total_WalkTime);
+        travelMode = 0;
       }
     }
 
@@ -258,7 +264,8 @@ class App extends Mediator {
       mapPageRoute: true,
       mapPageRouteTime: routeTime,
       mapPageRouteDistance: Math.round(routeGeoJSON.properties.Total_Kilometers * 100) / 100,
-      mapPageDestination: destination
+      mapPageDestination: destination,
+      mapPageTravelMode: travelMode
     });
 
     if (this.routeLayer !== null) {
@@ -464,6 +471,7 @@ class App extends Mediator {
                 routeTime={this.state.mapPageRouteTime} 
                 routeDistance={this.state.mapPageRouteDistance} 
                 destination={this.state.mapPageDestination} 
+                travelMode={this.state.mapPageTravelMode} 
               />
               <SpotFormPage 
                 visibility={this.state.spotformPageVisibility} 

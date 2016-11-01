@@ -56,9 +56,15 @@ class MapPage extends React.Component {
           margin-left: 15px;
           font-weight: 100;
         }
+        .route-info > img {
+          position: absolute;
+          right: 0;
+          margin: 10px;
+          height: 20px;
+        }
         `}</style>
         <MapView mapid={this.props.mapid} height={window.innerHeight - 50 + "px"} />
-        <RouteInfo route={this.props.route} time={this.props.routeTime} distance={this.props.routeDistance} destination={this.props.destination} />
+        <RouteInfo route={this.props.route} time={this.props.routeTime} distance={this.props.routeDistance} destination={this.props.destination} travelMode={this.props.travelMode} />
       </div>
     );
   }
@@ -70,7 +76,8 @@ MapPage.propTypes = {
   route: React.PropTypes.bool,
   routeTime: React.PropTypes.number,
   routeDistance: React.PropTypes.number,
-  destination: React.PropTypes.string
+  destination: React.PropTypes.string,
+  travelMode: React.PropTypes.number
 };
 
 MapPage.displayName = 'MapPage';
