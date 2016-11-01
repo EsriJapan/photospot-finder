@@ -55,10 +55,42 @@ class App extends Mediator {
       this.state.spotformPageVisibility = false;
       this.state.spotformPageUrl = '//www.arcgis.com/apps/GeoForm/index.html?appid=9dd92be784fe4f3f8d5a70624781e3d1';
 
-      this.userIcon = L.icon({
+      /*this.userIcon = L.icon({
         iconUrl: 'img/user.png',
         iconSize: [17, 44],
         iconAnchor: [9, 44]
+      });*/
+      this.userIcon = L.vectorIcon({
+        className: 'user-icon',
+        svgHeight: 32,
+        svgWidth: 32,
+        type: 'circle',
+        shape: {
+          r: '6',
+          cx: '16',
+          cy: '16'
+        },
+        style: {
+          fill: '#006ad1',
+          stroke: 'none',
+          strokeWidth: 1
+        }
+      });
+      this.userIconBorder = L.vectorIcon({
+        className: 'user-icon-border',
+        svgHeight: 32,
+        svgWidth: 32,
+        type: 'circle',
+        shape: {
+          r: '6',
+          cx: '16',
+          cy: '16'
+        },
+        style: {
+          fill: '#1e90ff',
+          stroke: '#1e90ff',
+          strokeWidth: 1
+        }
       });
       this.userLayer = null;
       this.routeStyle = {
@@ -88,9 +120,14 @@ class App extends Mediator {
     map.invalidateSize(true);
 
     const userIcon = this.userIcon;
-    this.userLayer = L.marker(this.state.userCurrentPosition, {
+    const userIconBorder = this.userIconBorder;
+    const userMarker = L.marker(this.state.userCurrentPosition, {
       icon: userIcon
-    }).addTo(map);
+    });
+    const userBorderMarker = L.marker(this.state.userCurrentPosition, {
+      icon: userIconBorder
+    });
+    this.userLayer = L.featureGroup([userBorderMarker, userMarker]).addTo(map);
   }
 
   getGeolocation (position) {
@@ -299,6 +336,18 @@ class App extends Mediator {
         @keyframes dash {
           to {
             stroke-dashoffset: 0;
+          }
+        }
+        .user-icon-border > svg > g > circle {
+          animation-duration: 3s;
+          animation-name: pulse;
+          animation-iteration-count: infinite;
+          fill-opacity: 0.3;
+        }
+        @keyframes pulse {
+          to {
+            r: 15;
+            opacity: 0.5;
           }
         }
         `}</style>
