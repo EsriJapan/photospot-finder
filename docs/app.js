@@ -901,22 +901,30 @@ var PhotoPage = function (_React$Component) {
 
       if (featureCollection.features.length > 0) {
         photos = featureCollection.features.map(function (f, i) {
-          var attachmentReqUrl = this.props.searchEndpointUrl + '/' + f.properties.OBJECTID + '/attachments';
+          return f;
+        }.bind(this));
+
+        photos.sort(function (a, b) {
+          return b.properties.route_view_count > a.properties.route_view_count;
+        });
+
+        photos.forEach(function (p, i) {
+          var attachmentReqUrl = this.props.searchEndpointUrl + '/' + p.properties.OBJECTID + '/attachments';
           var getAttachment = L.esri.request(attachmentReqUrl, {}, function (error, response) {
             if (error) {
-              console.log(error);
+              //console.log(error);
             } else {
-              console.log(response);
+              //console.log(response);
               photos[i].url = attachmentReqUrl + '/' + response.attachmentInfos[0].id;
-              this.setState({ photos: photos });
+              //this.setState({ photos: photos });
             }
           }.bind(this));
           getAttachments.push(getAttachment);
-          return f;
         }.bind(this));
 
         Promise.all(getAttachments).then(function () {
           console.log('PhotoPage.getAttachments: done!');
+          this.setState({ photos: photos });
           setTimeout(function () {
             this.props.onLoadPhotos(this.initialLoad);
             this.initialLoad = false;
