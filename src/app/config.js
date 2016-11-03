@@ -20,6 +20,9 @@ export const appConfig = {
     radius: 2500,
     endpointUrl: '//services.arcgis.com/wlVTGRSYTzAbjjiC/arcgis/rest/services/photospot_muroran/FeatureServer/0'
   },
+  kujiran: {
+    endpointUrl: '//services.arcgis.com/wlVTGRSYTzAbjjiC/arcgis/rest/services/photospot_kujiran/FeatureServer/0'
+  },
   route: {
     endpointUrl: '//utility.arcgis.com/usrsvcs/appservices/GfNovy4yk5xdJ9b4/rest/services/World/Route/NAServer/Route_World'
   },

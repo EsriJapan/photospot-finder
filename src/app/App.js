@@ -28,6 +28,8 @@ import SpotFormPage from './SpotFormPage';
 
 import { Mediator } from '../';
 
+import turf from 'turf';
+
 import appConfig from './config';
 
 class App extends Mediator {
@@ -54,6 +56,7 @@ class App extends Mediator {
       this.state.mapPageRouteDistance = 0;
       this.state.mapPageDestination = '';
       this.state.mapPageTravelMode = 0;
+      this.state.mapPageKujiranCount = 0;
 
       // SpotFormPage State
       this.state.spotformPageVisibility = false;
@@ -113,6 +116,7 @@ class App extends Mediator {
       this.onLoadPhotos = this.onLoadPhotos.bind(this);
       this.onChangeSwitch = this.onChangeSwitch.bind(this);
       this.getRoute = this.getRoute.bind(this);
+      this.countKujiran = this.countKujiran.bind(this);
       this.showMapPage = this.showMapPage.bind(this);
       this.showPhotoPage = this.showPhotoPage.bind(this);
       this.showSpotFormPage = this.showSpotFormPage.bind(this);
@@ -239,6 +243,18 @@ class App extends Mediator {
     }
   }
 
+  countKujiran (routeBuffer, mapPageStates) {
+    const kujiranQuery = L.esri.query({
+      url: appConfig.kujiran.endpointUrl
+    });
+    kujiranQuery.within(routeBuffer);
+    kujiranQuery.count(function(error, count, response){
+      console.log('App.countKujiran ' + count);
+      mapPageStates.mapPageKujiranCount = count;
+      this.setState(mapPageStates);
+    }.bind(this));
+  }
+
   getRoute (routes, destination) {
     console.log('App.getRoute: ', routes);
     const routeGeoJSON = L.esri.Util.arcgisToGeoJSON(routes.features[0]);
@@ -265,13 +281,15 @@ class App extends Mediator {
       }
     }
 
-    this.setState({
+    const mapPageStates = {
       mapPageRoute: true,
       mapPageRouteTime: routeTime,
       mapPageRouteDistance: Math.round(routeGeoJSON.properties.Total_Kilometers * 100) / 100,
       mapPageDestination: destination,
       mapPageTravelMode: travelMode
-    });
+    };
+    const routeBuffer = turf.buffer(routeGeoJSON, 250, 'meters');
+    this.countKujiran(routeBuffer, mapPageStates);
 
     if (this.routeLayer !== null) {
       this.routeLayer.clearLayers();
@@ -479,6 +497,7 @@ class App extends Mediator {
                 routeDistance={this.state.mapPageRouteDistance} 
                 destination={this.state.mapPageDestination} 
                 travelMode={this.state.mapPageTravelMode} 
+                kujiranCount={this.state.mapPageKujiranCount} 
               />
               <SpotFormPage 
                 visibility={this.state.spotformPageVisibility} 

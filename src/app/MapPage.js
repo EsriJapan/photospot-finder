@@ -40,9 +40,9 @@ class MapPage extends React.Component {
           color: #fff;
           background-color: #000;
           opacity: 0.7;
-          bottom: 16px;
+          bottom: 21px;
           width: 100%;
-          height: 100px;
+          height: 105px;
           position: absolute;
           z-index: 999;
         }
@@ -50,6 +50,7 @@ class MapPage extends React.Component {
           text-align: center;
           width: 100%;
           font-weight: 100;
+          margin: 0;
         }
         .route-info > p {
           margin-top: 10px;
@@ -62,9 +63,16 @@ class MapPage extends React.Component {
           margin: 10px;
           height: 20px;
         }
+        .kujiran-count {
+          margin-right: 10px;
+          text-align: right;
+        }
+        .kujiran-count > img {
+          height: 30px;
+        }
         `}</style>
         <MapView mapid={this.props.mapid} height={window.innerHeight - 50 + "px"} />
-        <RouteInfo route={this.props.route} time={this.props.routeTime} distance={this.props.routeDistance} destination={this.props.destination} travelMode={this.props.travelMode} />
+        <RouteInfo route={this.props.route} time={this.props.routeTime} distance={this.props.routeDistance} destination={this.props.destination} travelMode={this.props.travelMode} kujiranCount={this.props.kujiranCount} />
       </div>
     );
   }
@@ -77,7 +85,8 @@ MapPage.propTypes = {
   routeTime: React.PropTypes.number,
   routeDistance: React.PropTypes.number,
   destination: React.PropTypes.string,
-  travelMode: React.PropTypes.number
+  travelMode: React.PropTypes.number,
+  kujiranCount: React.PropTypes.number
 };
 
 MapPage.displayName = 'MapPage';

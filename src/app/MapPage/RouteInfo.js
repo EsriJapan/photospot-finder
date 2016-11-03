@@ -42,6 +42,9 @@ class RouteInfo extends React.Component {
         <img src={travelModeIcon} />
         <p>{this.props.destination} まで</p>
         <h3>{this.props.time} 分　|　{this.props.distance} km</h3>
+        <div className="kujiran-count">
+          <img src="img/colorkujiran-with-shadow-s.png" /> {this.props.kujiranCount}
+        </div>
       </div>
     );
   }
@@ -52,7 +55,8 @@ RouteInfo.propTypes = {
   time: React.PropTypes.number,
   distance: React.PropTypes.number,
   destination: React.PropTypes.string,
-  travelMode: React.PropTypes.number
+  travelMode: React.PropTypes.number,
+  kujiranCount: React.PropTypes.number
 };
 
 RouteInfo.displayName = 'RouteInfo';
