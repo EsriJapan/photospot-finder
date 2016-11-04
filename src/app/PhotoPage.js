@@ -51,7 +51,7 @@ class PhotoPage extends React.Component {
       }.bind(this));
 
       photos.sort(function (a, b) {
-        return b.properties.route_view_count > a.properties.route_view_count;
+        return (b.properties.route_view_count > a.properties.route_view_count) ? 1 : (b.properties.route_view_count < a.properties.route_view_count) ? -1 : 0;
       });
 
       photos.forEach(function (p, i) {
