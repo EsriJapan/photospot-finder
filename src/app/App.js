@@ -57,6 +57,8 @@ class App extends Mediator {
       this.state.mapPageDestination = '';
       this.state.mapPageTravelMode = 0;
       this.state.mapPageKujiranCount = 0;
+      this.state.mapPageYorimichiCount = 0;
+      this.state.mapPageYorimichiAlertVisibility = false;
 
       // SpotFormPage State
       this.state.spotformPageVisibility = false;
@@ -111,6 +113,9 @@ class App extends Mediator {
       };
       this.routeLayer = null;
       this.photospotLayer = L.esri.featureLayer({ url: this.state.photoPageSearchEndpointUrl });
+      this.selectedPhoto = null;
+      this.yorimichiSpots = [];
+
       this.updateRouteViewCount = this.updateRouteViewCount.bind(this);
       this.onSelectPhoto = this.onSelectPhoto.bind(this);
       this.onLoadPhotos = this.onLoadPhotos.bind(this);
@@ -121,6 +126,10 @@ class App extends Mediator {
       this.showPhotoPage = this.showPhotoPage.bind(this);
       this.showSpotFormPage = this.showSpotFormPage.bind(this);
       this.hideLoadPage = this.hideLoadPage.bind(this);
+      this.findYorimichiSpots = this.findYorimichiSpots.bind(this);
+      this.onClickYorimichiYesButton = this.onClickYorimichiYesButton.bind(this);
+      this.showYorimichiAlert = this.showYorimichiAlert.bind(this);
+      this.hideYorimichiAlert = this.hideYorimichiAlert.bind(this);
   }
 
   readyComponents () {
@@ -132,7 +141,7 @@ class App extends Mediator {
     const routeInfoString = this.loadRoute();
     if (routeInfoString !== null) {
       const routeInfo = JSON.parse(routeInfoString);
-      this.getRoute(routeInfo.routes, routeInfo.destination);
+      this.getRoute(routeInfo.routes, routeInfo.destination, false);
       this.setState({ savedRoute: true });
       setTimeout(function () {
         this.setState({ savedRoute: false });
@@ -189,6 +198,8 @@ class App extends Mediator {
     const userLocation = [this.state.userCurrentPosition[1], this.state.userCurrentPosition[0]];
     let routeParams;
 
+    this.selectedPhoto = data;
+
     this.updateRouteViewCount(data);
 
     if (this.state.travelMode === 1) {
@@ -214,7 +225,7 @@ class App extends Mediator {
       if(error){
         console.log(error);
       } else {
-        this.getRoute(response.routes, data.properties.title);
+        this.getRoute(response.routes, data.properties.title, true);
       }
     }.bind(this));
 
@@ -255,7 +266,71 @@ class App extends Mediator {
     }.bind(this));
   }
 
-  getRoute (routes, destination) {
+  findYorimichiSpots (routeBuffer) {
+    const yorimichiSpotsQuery = L.esri.query({
+      url: appConfig.yorimichiSpot.endpointUrl
+    });
+    yorimichiSpotsQuery.within(routeBuffer);
+    yorimichiSpotsQuery.run(function(error, featureCollection, response){
+      console.log('App.findYorimichiSpots: ' + featureCollection.features);
+      if (featureCollection.features.length > 0) {
+        const count = featureCollection.features.length;
+        this.yorimichiSpots = featureCollection.features;
+        this.showYorimichiAlert(count);
+      }
+    }.bind(this));
+  }
+
+  onClickYorimichiYesButton () {
+    const routeEndpointUrl = appConfig.route.endpointUrl;
+    const photoSpotLocation = this.selectedPhoto.geometry.coordinates;
+    const userLocation = [this.state.userCurrentPosition[1], this.state.userCurrentPosition[0]];
+    const yorimichiSpotsLocation = this.yorimichiSpots.map(function (y, i) {
+      return y.geometry.coordinates[0] + ',' + y.geometry.coordinates[1] + '; ';
+    });
+    let routeParams;
+
+    this.hideYorimichiAlert();
+
+    if (this.state.travelMode === 1) {
+      routeParams = {
+        findBestSequence: true,
+        preserveFirstStop: true,
+        preserveLastStop: true,
+        stops: userLocation[0] + ',' + userLocation[1] + '; ' + yorimichiSpotsLocation + photoSpotLocation[0] + ',' + photoSpotLocation[1]
+      }
+    } else if (this.state.travelMode === 0) {
+      routeParams = {
+        findBestSequence: true,
+        preserveFirstStop: true,
+        preserveLastStop: true,
+        stops: userLocation[0] + ',' + userLocation[1] + '; ' + yorimichiSpotsLocation + photoSpotLocation[0] + ',' + photoSpotLocation[1],
+        travelMode: '{"attributeParameterValues":[{"parameterName":"Restriction Usage","attributeName":"Walking","value":"PROHIBITED"},{"parameterName":"Restriction Usage","attributeName":"Preferred for Pedestrians","value":"PREFER_LOW"},{"parameterName":"Walking Speed (km/h)","attributeName":"WalkTime","value":5},{"parameterName":"Restriction Usage","attributeName":"Avoid Roads Unsuitable for Pedestrians","value":"AVOID_HIGH"}],"description":"Follows paths and roads that allow pedestrian traffic and finds solutions that optimize travel time. The walking speed is set to 5 kilometers per hour.","impedanceAttributeName":"WalkTime","simplificationToleranceUnits":"esriMeters","uturnAtJunctions":"esriNFSBAllowBacktrack","restrictionAttributeNames":["Avoid Roads Unsuitable for Pedestrians","Preferred for Pedestrians","Walking"],"useHierarchy":false,"simplificationTolerance":2,"timeAttributeName":"WalkTime","distanceAttributeName":"Kilometers","type":"WALK","id":"caFAgoThrvUpkFBW","name":"Walking Time"}'
+      }
+    }
+
+    L.esri.request(routeEndpointUrl + '/solve', routeParams, function(error, response) {
+      if(error){
+        console.log(error);
+      } else {
+        const selectedPhoto = this.selectedPhoto;
+        this.getRoute(response.routes, selectedPhoto.properties.title, false);
+      }
+    }.bind(this));
+  }
+
+  showYorimichiAlert (count) {
+    this.setState({ 
+      mapPageYorimichiAlertVisibility: true,
+      mapPageYorimichiCount: count
+    });
+  }
+
+  hideYorimichiAlert () {
+    this.setState({ mapPageYorimichiAlertVisibility: false });
+  }
+
+  getRoute (routes, destination, first) {
     console.log('App.getRoute: ', routes);
     const routeGeoJSON = L.esri.Util.arcgisToGeoJSON(routes.features[0]);
     const routeStyle = this.routeStyle;
@@ -290,6 +365,10 @@ class App extends Mediator {
     };
     const routeBuffer = turf.buffer(routeGeoJSON, 250, 'meters');
     this.countKujiran(routeBuffer, mapPageStates);
+
+    if (first === true) {
+      this.findYorimichiSpots(routeBuffer);
+    }
 
     if (this.routeLayer !== null) {
       this.routeLayer.clearLayers();
@@ -498,6 +577,10 @@ class App extends Mediator {
                 destination={this.state.mapPageDestination} 
                 travelMode={this.state.mapPageTravelMode} 
                 kujiranCount={this.state.mapPageKujiranCount} 
+                yorimichiCount={this.state.mapPageYorimichiCount} 
+                yorimichiAlertVisibility={this.state.mapPageYorimichiAlertVisibility} 
+                onClickYorimichiYesButton={this.onClickYorimichiYesButton} 
+                onClickYorimichiNoButton={this.hideYorimichiAlert} 
               />
               <SpotFormPage 
                 visibility={this.state.spotformPageVisibility} 

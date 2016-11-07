@@ -21,6 +21,7 @@
 import React from 'react';
 import { MapView } from '../';
 import RouteInfo from './MapPage/RouteInfo';
+import YorimichiAlert from './MapPage/YorimichiAlert';
 
 class MapPage extends React.Component {
   constructor (props) {
@@ -73,6 +74,7 @@ class MapPage extends React.Component {
         `}</style>
         <MapView mapid={this.props.mapid} height={window.innerHeight - 50 + "px"} />
         <RouteInfo route={this.props.route} time={this.props.routeTime} distance={this.props.routeDistance} destination={this.props.destination} travelMode={this.props.travelMode} kujiranCount={this.props.kujiranCount} />
+        <YorimichiAlert yorimichiCount={this.props.yorimichiCount} visibility={this.props.yorimichiAlertVisibility} onClickYesButton={this.props.onClickYorimichiYesButton} onClickNoButton={this.props.onClickYorimichiNoButton} />
       </div>
     );
   }
@@ -86,7 +88,11 @@ MapPage.propTypes = {
   routeDistance: React.PropTypes.number,
   destination: React.PropTypes.string,
   travelMode: React.PropTypes.number,
-  kujiranCount: React.PropTypes.number
+  kujiranCount: React.PropTypes.number,
+  yorimichiCount: React.PropTypes.number,
+  yorimichiAlertVisibility: React.PropTypes.bool,
+  onClickYorimichiYesButton: React.PropTypes.func,
+  onClickYorimichiNoButton: React.PropTypes.func
 };
 
 MapPage.displayName = 'MapPage';

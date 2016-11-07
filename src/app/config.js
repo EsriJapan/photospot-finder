@@ -23,6 +23,9 @@ export const appConfig = {
   kujiran: {
     endpointUrl: '//services.arcgis.com/wlVTGRSYTzAbjjiC/arcgis/rest/services/photospot_kujiran/FeatureServer/0'
   },
+  yorimichiSpot: {
+    endpointUrl: '//services.arcgis.com/wlVTGRSYTzAbjjiC/arcgis/rest/services/室蘭市の観光情報(総務省公共クラウド)/FeatureServer/0'
+  },
   route: {
     endpointUrl: '//utility.arcgis.com/usrsvcs/appservices/GfNovy4yk5xdJ9b4/rest/services/World/Route/NAServer/Route_World'
   },
