@@ -1,22 +1,4 @@
-// Copyright (c) 2016 Yusuke Nunokawa (https://ynunokawa.github.io)
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// Copyright (c) 2016 Esri Japan
 
 import React from 'react';
 import { Navbar, Nav, NavItem, NavDropdown, MenuItem, Grid, Row, Col, Glyphicon } from 'react-bootstrap';
@@ -36,20 +18,20 @@ class App extends Mediator {
   constructor (props) {
       super(props);
 
-      // User State
+      // ユーザーの状態
       this.state.userCurrentPosition = appConfig.map.default.center;
 
-      // LoadPage State
+      // 読み込み画面の状態
       this.state.loadPageVisibility = true;
 
-      // PhotoPage State
+      // 写真ページの状態
       this.state.photoPageVisibility = false;
-      this.state.photoPageSearchRadius = appConfig.photoSearch.radius;
+      this.state.photoPageSearchRadius = appConfig.photoSearch.radius.walk;
       this.state.photoPageSearchEndpointUrl = appConfig.photoSearch.endpointUrl;
       this.state.travelMode = 0; // 0: walk, 1: car
       this.state.savedRoute = false;
 
-      // MapPage State
+      // 地図ページの状態
       this.state.mapPageVisibility = false;
       this.state.mapPageRoute = false;
       this.state.mapPageRouteTime = 0;
@@ -60,15 +42,11 @@ class App extends Mediator {
       this.state.mapPageYorimichiCount = 0;
       this.state.mapPageYorimichiAlertVisibility = false;
 
-      // SpotFormPage State
+      // 写真スポット投稿ページの状態
       this.state.spotformPageVisibility = false;
       this.state.spotformPageUrl = appConfig.spotformApp.url;
 
-      /*this.userIcon = L.icon({
-        iconUrl: 'img/user.png',
-        iconSize: [17, 44],
-        iconAnchor: [9, 44]
-      });*/
+      // 現在位置アイコン
       this.userIcon = L.vectorIcon({
         className: 'user-icon',
         svgHeight: 48,
@@ -85,6 +63,7 @@ class App extends Mediator {
           strokeWidth: 1
         }
       });
+      // 現在位置アイコン（レーダーっぽい表現）
       this.userIconBorder = L.vectorIcon({
         className: 'user-icon-border',
         svgHeight: 48,
@@ -101,21 +80,20 @@ class App extends Mediator {
           strokeWidth: 0.5
         }
       });
+      // 現在位置用レイヤー
       this.userLayer = L.featureGroup([]);
-      this.routeStyle = {
-        color: 'rgb(255, 100, 0)',
-        weight: 7,
-        opacity: 0.7,
-        lineCap: 'round',
-        dashArray: '1000',
-        dashOffset: '1000',
-        className: 'route-path'
-      };
+      // ルートのスタイル
+      this.routeStyle = appConfig.route.style;
+      // ルート表示用レイヤー
       this.routeLayer = null;
+      // 写真スポットレイヤー（ルートビュー数の更新にのみ使用）
       this.photospotLayer = L.esri.featureLayer({ url: this.state.photoPageSearchEndpointUrl });
+      // 選択した写真データ
       this.selectedPhoto = null;
+      // 寄り道スポットデータ
       this.yorimichiSpots = [];
 
+      // this バインド地獄（アローファンクション使いたい）
       this.updateRouteViewCount = this.updateRouteViewCount.bind(this);
       this.onSelectPhoto = this.onSelectPhoto.bind(this);
       this.onLoadPhotos = this.onLoadPhotos.bind(this);
@@ -132,12 +110,16 @@ class App extends Mediator {
       this.hideYorimichiAlert = this.hideYorimichiAlert.bind(this);
   }
 
+  // Mediator のメソッド：マップの初期化が完了
   readyComponents () {
+    // Leaflet マップのサイズ調整
     const map = this.state.map;
     map.invalidateSize(true);
 
+    // 現在位置表示用のレイヤーをマップに追加
     this.userLayer.addTo(map);
 
+    // LocalStorage に保存されたルートの確認
     const routeInfoString = this.loadRoute();
     if (routeInfoString !== null) {
       const routeInfo = JSON.parse(routeInfoString);
@@ -148,6 +130,7 @@ class App extends Mediator {
       }.bind(this), 15000);
     }
 
+    // デモ用プログラム：ダミーの現在位置
     if (appConfig.map.geolocation === false) {
       const dammyPosition = {
         coords: {
@@ -159,11 +142,15 @@ class App extends Mediator {
     }
   }
 
+  // 現在位置の設定
   getGeolocation (position) {
     console.log('App.geoGeolocation: ', position);
     const userCurrentPosition = [position.coords.latitude, position.coords.longitude];
 
+    // 現在位置の更新のためマーカーを消去
     this.userLayer.clearLayers();
+
+    // 現在位置マーカーの追加
     const userIcon = this.userIcon;
     const userIconBorder = this.userIconBorder;
     const userMarker = L.marker(userCurrentPosition, {
@@ -180,17 +167,21 @@ class App extends Mediator {
     });
   }
 
+  // 現在位置取得のエラー処理
   errorGeolocation () {
     alert('現在地を取得できません');
   }
 
+  // ルートビュー数の更新
   updateRouteViewCount (data) {
+    // ルートビュー数の値を加算してフィーチャサービスを更新
     data.properties.route_view_count += 1;
     this.photospotLayer.updateFeature(data, function (response) {
       console.log(response);
     });
   }
 
+  // 写真の選択（ルート検索開始ボタンをクリック後に実行）
   onSelectPhoto (data) {
     console.log(data);
     const routeEndpointUrl = appConfig.route.endpointUrl;
@@ -200,8 +191,10 @@ class App extends Mediator {
 
     this.selectedPhoto = data;
 
+    // ルートビュー数の更新
     this.updateRouteViewCount(data);
 
+    // トラベルモードの設定（トラベルモードスイッチの状態で分岐）
     if (this.state.travelMode === 1) {
       routeParams = {
         stops: userLocation[0] + ',' + userLocation[1] + '; ' + photoSpotLocation[0] + ',' + photoSpotLocation[1]
@@ -221,6 +214,7 @@ class App extends Mediator {
     gpTask.setParam('stops', userLocation[0] + ',' + userLocation[1] + '; ' + photoSpotLocation[0] + ',' + photoSpotLocation[1]);
     gpTask.run(this.getRoute.bind(this));*/
 
+    // ルート検索の実行
     L.esri.request(routeEndpointUrl + '/solve', routeParams, function(error, response) {
       if(error){
         console.log(error);
@@ -229,36 +223,47 @@ class App extends Mediator {
       }
     }.bind(this));
 
+    // 地図ページへ表示切替
     this.showMapPage();
   }
 
+  // 写真ページのすべての写真が読み込まれた時点で実行
   onLoadPhotos (initialLoad) {
+    // 読み込み画面を非表示
     this.hideLoadPage();
+    // 初期読み込みの場合に写真ページへ表示切替
     if (initialLoad === true) {
       this.showPhotoPage();
     }
   }
 
+  // トラベルモードスイッチの切り替え時に実行
   onChangeSwitch (element, state) {
     console.log('App.onChangeSwitch: ', element, state);
+    // 切り替え後のトラベルモードスイッチの状態で分岐（写真スポット取得範囲とトラベルモードの設定）
     if (state === true) {
+      // 徒歩モード
       this.setState({
-        photoPageSearchRadius: 2500,
+        photoPageSearchRadius: appConfig.photoSearch.radius.walk,
         travelMode: 0
       });
     } else {
+      // 自動車モード
       this.setState({
-        photoPageSearchRadius: 10000,
+        photoPageSearchRadius: appConfig.photoSearch.radius.car,
         travelMode: 1
       });
     }
   }
 
+  // ルートバッファーに含まれるくじらん数のカウント
   countKujiran (routeBuffer, mapPageStates) {
+    // くじらん検索クエリの初期化
     const kujiranQuery = L.esri.query({
       url: appConfig.kujiran.endpointUrl
     });
-    kujiranQuery.within(routeBuffer);
+    kujiranQuery.within(routeBuffer); // ルートバッファーに含まれるフィーチャを検索
+    // 条件に合致したフィーチャの数のみを取得
     kujiranQuery.count(function(error, count, response){
       console.log('App.countKujiran ' + count);
       mapPageStates.mapPageKujiranCount = count;
@@ -266,11 +271,14 @@ class App extends Mediator {
     }.bind(this));
   }
 
+  // ルートバッファーに含まれる寄り道スポット（観光スポット）の検索
   findYorimichiSpots (routeBuffer) {
+    // 寄り道スポット検索クエリの初期化
     const yorimichiSpotsQuery = L.esri.query({
       url: appConfig.yorimichiSpot.endpointUrl
     });
-    yorimichiSpotsQuery.within(routeBuffer);
+    yorimichiSpotsQuery.within(routeBuffer); // ルートバッファーに含まれるフィーチャを検索
+    // 条件に合致したフィーチャを取得
     yorimichiSpotsQuery.run(function(error, featureCollection, response){
       console.log('App.findYorimichiSpots: ' + featureCollection.features);
       if (featureCollection.features.length > 0) {
@@ -281,6 +289,7 @@ class App extends Mediator {
     }.bind(this));
   }
 
+  // [寄り道する]ボタンのクリック時に実行
   onClickYorimichiYesButton () {
     const routeEndpointUrl = appConfig.route.endpointUrl;
     const photoSpotLocation = this.selectedPhoto.geometry.coordinates;
@@ -290,25 +299,28 @@ class App extends Mediator {
     });
     let routeParams;
 
+    // 寄り道案内アラートの非表示
     this.hideYorimichiAlert();
 
+    // 最適ルートとトラベルモードの設定（トラベルモードスイッチの状態で分岐）
     if (this.state.travelMode === 1) {
       routeParams = {
-        findBestSequence: true,
-        preserveFirstStop: true,
-        preserveLastStop: true,
+        findBestSequence: true, // 最適な巡回ルート検索
+        preserveFirstStop: true, // ルート開始地点の固定
+        preserveLastStop: true, // ルート終着地点の固定
         stops: userLocation[0] + ',' + userLocation[1] + '; ' + yorimichiSpotsLocation + photoSpotLocation[0] + ',' + photoSpotLocation[1]
       }
     } else if (this.state.travelMode === 0) {
       routeParams = {
-        findBestSequence: true,
-        preserveFirstStop: true,
-        preserveLastStop: true,
+        findBestSequence: true, // 最適な巡回ルート検索
+        preserveFirstStop: true, // ルート開始地点の固定
+        preserveLastStop: true, // ルート終着地点の固定
         stops: userLocation[0] + ',' + userLocation[1] + '; ' + yorimichiSpotsLocation + photoSpotLocation[0] + ',' + photoSpotLocation[1],
         travelMode: '{"attributeParameterValues":[{"parameterName":"Restriction Usage","attributeName":"Walking","value":"PROHIBITED"},{"parameterName":"Restriction Usage","attributeName":"Preferred for Pedestrians","value":"PREFER_LOW"},{"parameterName":"Walking Speed (km/h)","attributeName":"WalkTime","value":5},{"parameterName":"Restriction Usage","attributeName":"Avoid Roads Unsuitable for Pedestrians","value":"AVOID_HIGH"}],"description":"Follows paths and roads that allow pedestrian traffic and finds solutions that optimize travel time. The walking speed is set to 5 kilometers per hour.","impedanceAttributeName":"WalkTime","simplificationToleranceUnits":"esriMeters","uturnAtJunctions":"esriNFSBAllowBacktrack","restrictionAttributeNames":["Avoid Roads Unsuitable for Pedestrians","Preferred for Pedestrians","Walking"],"useHierarchy":false,"simplificationTolerance":2,"timeAttributeName":"WalkTime","distanceAttributeName":"Kilometers","type":"WALK","id":"caFAgoThrvUpkFBW","name":"Walking Time"}'
       }
     }
 
+    // ルート検索の実行
     L.esri.request(routeEndpointUrl + '/solve', routeParams, function(error, response) {
       if(error){
         console.log(error);
@@ -319,6 +331,7 @@ class App extends Mediator {
     }.bind(this));
   }
 
+  // 寄り道案内アラートの表示
   showYorimichiAlert (count) {
     this.setState({ 
       mapPageYorimichiAlertVisibility: true,
@@ -326,10 +339,12 @@ class App extends Mediator {
     });
   }
 
+  // 寄り道案内アラートの非表示
   hideYorimichiAlert () {
     this.setState({ mapPageYorimichiAlertVisibility: false });
   }
 
+  // ルート検索結果の表示・保存
   getRoute (routes, destination, first) {
     console.log('App.getRoute: ', routes);
     const routeGeoJSON = L.esri.Util.arcgisToGeoJSON(routes.features[0]);
@@ -338,6 +353,7 @@ class App extends Mediator {
     let routeTime;
     let travelMode;
 
+    // 到達時間の取得（トラベルモードで分岐）
     if (this.state.travelMode === 0) {
       travelMode = 0;
       if (routeGeoJSON.properties.Total_WalkTime !== undefined) {
@@ -356,6 +372,7 @@ class App extends Mediator {
       }
     }
 
+    // 地図ページの更新内容
     const mapPageStates = {
       mapPageRoute: true,
       mapPageRouteTime: routeTime,
@@ -363,13 +380,19 @@ class App extends Mediator {
       mapPageDestination: destination,
       mapPageTravelMode: travelMode
     };
-    const routeBuffer = turf.buffer(routeGeoJSON, 250, 'meters');
+
+    // ルートバッファー
+    const routeBuffer = turf.buffer(routeGeoJSON, appConfig.route.bufferRadius, 'meters');
+    // ルートバッファーに含まれるくじらん数のカウント
     this.countKujiran(routeBuffer, mapPageStates);
 
+    // 写真選択によるルート実行の場合にのみ実行
     if (first === true) {
+      // ルートバッファーに含まれる寄り道スポットの検索
       this.findYorimichiSpots(routeBuffer);
     }
 
+    // ルート表示用レイヤーの更新
     if (this.routeLayer !== null) {
       this.routeLayer.clearLayers();
     } else {
@@ -383,21 +406,23 @@ class App extends Mediator {
       });
       this.routeLayer.addTo(map);
     }
-
     this.routeLayer.addData(routeGeoJSON);
 
+    // ルートの保存（LocalStorage）
     this.saveRoute(routes, destination);
   }
 
+  // ルートの保存（LocalStorage）
   saveRoute (routes, destination) {
     const routeInfo = {
       routes: routes,
       destination: destination
     };
-    const routeInfoString = JSON.stringify(routeInfo);
+    const routeInfoString = JSON.stringify(routeInfo); // ルートと目的地のオブジェクトを文字列に変換
     localStorage.setItem('photospot-finder-route', routeInfoString);
   }
 
+  // 保存ルート（LocalStorage）の参照
   loadRoute () {
     console.log('App.loadRoute', localStorage.getItem('photospot-finder-route'));
 
@@ -406,6 +431,7 @@ class App extends Mediator {
     return routeInfoString;
   }
 
+  // 地図ページへの表示切替
   showMapPage () {
     this.setState({
       photoPageVisibility: false,
@@ -417,6 +443,7 @@ class App extends Mediator {
     setTimeout(function () {map.invalidateSize(true);}, 2000);
   }
 
+  // 写真ページへの表示切替
   showPhotoPage () {
     this.setState({
       photoPageVisibility: true,
@@ -425,6 +452,7 @@ class App extends Mediator {
     });
   }
 
+  // 写真スポット投稿ページへの表示切替
   showSpotFormPage () {
     this.setState({
       photoPageVisibility: false,
@@ -433,6 +461,7 @@ class App extends Mediator {
     });
   }
 
+  // 読み込み画面の表示
   showLoadPage () {
     this.setState({
       loadPageVisibility: true,
@@ -442,6 +471,7 @@ class App extends Mediator {
     });
   }
 
+  // 読み込み画面の非表示
   hideLoadPage () {
     this.setState({
       loadPageVisibility: false
@@ -537,7 +567,7 @@ class App extends Mediator {
         <Navbar inverse className="fixed-nav">
           <Navbar.Header>
             <Navbar.Brand>
-              <a href="#"><img src="img/icon.png" style={{ position: 'absolute', width: '42px', marginTop: '-8px' }} /> <span style={{ color: '#fff', fontWeight: 'bold', marginLeft: '56px' }}>PhotoSpot</span> Finder</a>
+              <a href="#"><img src={appConfig.ui.iconUrl} style={{ position: 'absolute', width: '42px', marginTop: '-8px' }} /> <span style={{ color: '#fff', fontWeight: 'bold', marginLeft: '56px' }}>{appConfig.ui.title}</span> {appConfig.ui.subtitle}</a>
             </Navbar.Brand>
             <Navbar.Toggle />
           </Navbar.Header>

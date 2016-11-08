@@ -9,6 +9,11 @@ urlParams.forEach(function (urlParam) {
 console.log('appConfig geolocation: ', demo);
 
 export const appConfig = {
+  ui: {
+    title: 'PhotoSpot',
+    subtitle: 'Finder',
+    iconUrl: 'img/icon.png'
+  },
   map: {
     id: '956c47b1c2ea40a0b6530b3bb64af437',
     default: {
@@ -17,7 +22,10 @@ export const appConfig = {
     geolocation: demo
   },
   photoSearch: {
-    radius: 2500,
+    radius: {
+      walk: 2500,
+      car: 10000
+    },
     endpointUrl: '//services.arcgis.com/wlVTGRSYTzAbjjiC/arcgis/rest/services/photospot_muroran/FeatureServer/0'
   },
   kujiran: {
@@ -27,6 +35,16 @@ export const appConfig = {
     endpointUrl: '//services.arcgis.com/wlVTGRSYTzAbjjiC/arcgis/rest/services/室蘭市の観光情報(総務省公共クラウド)/FeatureServer/0'
   },
   route: {
+    style: {
+      color: 'rgb(255, 100, 0)',
+      weight: 7,
+      opacity: 0.7,
+      lineCap: 'round',
+      dashArray: '1000',
+      dashOffset: '1000',
+      className: 'route-path'
+    },
+    bufferRadius: 250,
     endpointUrl: '//utility.arcgis.com/usrsvcs/appservices/GfNovy4yk5xdJ9b4/rest/services/World/Route/NAServer/Route_World'
   },
   spotformApp: {
