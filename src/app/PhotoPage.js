@@ -111,6 +111,7 @@ class PhotoPage extends React.Component {
           text-shadow: 1px 1px 1px #333, -1px 1px 1px #333, 1px -1px 1px #333, -1px -1px 1px #333;
           position: relative;
           transition: all 0.3s;
+          min-height: 150px;
         }
         .murophoto-frame:hover {
           opacity: 0.8;
