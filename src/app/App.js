@@ -41,6 +41,7 @@ class App extends Mediator {
       this.state.mapPageKujiranCount = 0;
       this.state.mapPageYorimichiCount = 0;
       this.state.mapPageYorimichiAlertVisibility = false;
+      this.state.mapPageDestinationPhoto = 'img/blank.png';
 
       // 写真スポット投稿ページの状態
       this.state.spotformPageVisibility = false;
@@ -126,7 +127,10 @@ class App extends Mediator {
     if (routeInfoString !== null) {
       const routeInfo = JSON.parse(routeInfoString);
       this.getRoute(routeInfo.routes, routeInfo.destination, false);
-      this.setState({ savedRoute: true });
+      this.setState({
+        savedRoute: true,
+        mapPageDestinationPhoto: routeInfo.destinationPhoto
+      });
       setTimeout(function () {
         this.setState({ savedRoute: false });
       }.bind(this), 15000);
@@ -184,7 +188,7 @@ class App extends Mediator {
   }
 
   // ユーザーログイン認証
-  oauth (data) {
+  oauth (data, imgUrl) {
     const protocol = window.location.protocol;
     const host = window.location.host;
     const pathname = window.location.pathname;
@@ -193,17 +197,17 @@ class App extends Mediator {
     // OAuth 認証後に実行
     window.oauthCallback = function (token) {
       this.token = token;
-      this.onSelectPhoto(data);
+      this.onSelectPhoto(data, imgUrl);
     }.bind(this);
 
     window.open('https://www.arcgis.com/sharing/oauth2/authorize?client_id=' + appConfig.oauth.appid + '&response_type=token&expiration=20160&redirect_uri=' + window.encodeURIComponent(callbackPage), 'oauth', 'height=400,width=600,menubar=no,location=yes,resizable=yes,scrollbars=yes,status=yes');
   }
 
   // 写真の選択（ルート検索開始ボタンをクリック後に実行）
-  onSelectPhoto (data) {
+  onSelectPhoto (data, imgUrl) {
     // アプリ認証を使わない場合はユーザーログイン認証を実施
     if (appConfig.oauth.appLogin === false && this.token === null) {
-      this.oauth(data);
+      this.oauth(data, imgUrl);
     }
     else {
       console.log(data);
@@ -213,6 +217,8 @@ class App extends Mediator {
       let routeParams;
 
       this.selectedPhoto = data;
+
+      this.setState({ mapPageDestinationPhoto: imgUrl });
 
       // ルートビュー数の更新
       this.updateRouteViewCount(data);
@@ -450,7 +456,8 @@ class App extends Mediator {
   saveRoute (routes, destination) {
     const routeInfo = {
       routes: routes,
-      destination: destination
+      destination: destination,
+      destinationPhoto: this.state.mapPageDestinationPhoto
     };
     const routeInfoString = JSON.stringify(routeInfo); // ルートと目的地のオブジェクトを文字列に変換
     localStorage.setItem('photospot-finder-route', routeInfoString);
@@ -640,6 +647,7 @@ class App extends Mediator {
                 routeDistance={this.state.mapPageRouteDistance} 
                 destination={this.state.mapPageDestination} 
                 travelMode={this.state.mapPageTravelMode} 
+                destinationPhoto={this.state.mapPageDestinationPhoto} 
                 kujiranCount={this.state.mapPageKujiranCount} 
                 yorimichiCount={this.state.mapPageYorimichiCount} 
                 yorimichiAlertVisibility={this.state.mapPageYorimichiAlertVisibility} 

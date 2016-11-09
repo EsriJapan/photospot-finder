@@ -21,6 +21,9 @@ class RouteInfo extends React.Component {
 
     return (
       <div className="route-info" style={{ display: visibility }}>
+        <div className="destination-photo">
+          <img src={this.props.destinationPhoto} />
+        </div>
         <img src={travelModeIcon} />
         <p>{this.props.destination} まで</p>
         <h3>{this.props.time} 分　|　{this.props.distance} km</h3>
@@ -38,6 +41,7 @@ RouteInfo.propTypes = {
   distance: React.PropTypes.number,
   destination: React.PropTypes.string,
   travelMode: React.PropTypes.number,
+  destinationPhoto: React.PropTypes.string,
   kujiranCount: React.PropTypes.number
 };
 
