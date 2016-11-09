@@ -9,6 +9,10 @@ urlParams.forEach(function (urlParam) {
 console.log('appConfig geolocation: ', demo);
 
 export const appConfig = {
+  oauth: {
+    appLogin: false, // for Esri World Route Service
+    appid: 'kJb12p62K5gGwjNx' // ArcGIS for Developers で発行したアプリID: https://developers.arcgis.com/applications/
+  },
   ui: {
     title: 'PhotoSpot',
     subtitle: 'Finder',
@@ -45,7 +49,8 @@ export const appConfig = {
       className: 'route-path'
     },
     bufferRadius: 250,
-    endpointUrl: '//utility.arcgis.com/usrsvcs/appservices/GfNovy4yk5xdJ9b4/rest/services/World/Route/NAServer/Route_World'
+    endpointUrl: '//route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World'
+    //endpointUrl: '//utility.arcgis.com/usrsvcs/appservices/GfNovy4yk5xdJ9b4/rest/services/World/Route/NAServer/Route_World'
   },
   spotformApp: {
     url: '//www.arcgis.com/apps/GeoForm/index.html?appid=9dd92be784fe4f3f8d5a70624781e3d1'

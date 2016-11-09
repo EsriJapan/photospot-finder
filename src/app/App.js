@@ -214,6 +214,11 @@ class App extends Mediator {
     gpTask.setParam('stops', userLocation[0] + ',' + userLocation[1] + '; ' + photoSpotLocation[0] + ',' + photoSpotLocation[1]);
     gpTask.run(this.getRoute.bind(this));*/
 
+    // アクセストークンの付与
+    if (this.props.token !== null) {
+      routeParams.token = this.props.token;
+    }
+
     // ルート検索の実行
     L.esri.request(routeEndpointUrl + '/solve', routeParams, function(error, response) {
       if(error){
@@ -318,6 +323,11 @@ class App extends Mediator {
         stops: userLocation[0] + ',' + userLocation[1] + '; ' + yorimichiSpotsLocation + photoSpotLocation[0] + ',' + photoSpotLocation[1],
         travelMode: '{"attributeParameterValues":[{"parameterName":"Restriction Usage","attributeName":"Walking","value":"PROHIBITED"},{"parameterName":"Restriction Usage","attributeName":"Preferred for Pedestrians","value":"PREFER_LOW"},{"parameterName":"Walking Speed (km/h)","attributeName":"WalkTime","value":5},{"parameterName":"Restriction Usage","attributeName":"Avoid Roads Unsuitable for Pedestrians","value":"AVOID_HIGH"}],"description":"Follows paths and roads that allow pedestrian traffic and finds solutions that optimize travel time. The walking speed is set to 5 kilometers per hour.","impedanceAttributeName":"WalkTime","simplificationToleranceUnits":"esriMeters","uturnAtJunctions":"esriNFSBAllowBacktrack","restrictionAttributeNames":["Avoid Roads Unsuitable for Pedestrians","Preferred for Pedestrians","Walking"],"useHierarchy":false,"simplificationTolerance":2,"timeAttributeName":"WalkTime","distanceAttributeName":"Kilometers","type":"WALK","id":"caFAgoThrvUpkFBW","name":"Walking Time"}'
       }
+    }
+
+    // アクセストークンの付与
+    if (this.props.token !== null) {
+      routeParams.token = this.props.token;
     }
 
     // ルート検索の実行
@@ -623,6 +633,10 @@ class App extends Mediator {
     );
   }
 }
+
+App.propTypes = {
+  token: React.PropTypes.any
+};
 
 App.displayName = 'App';
 

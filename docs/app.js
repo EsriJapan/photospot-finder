@@ -268,6 +268,11 @@ var App = function (_Mediator) {
       gpTask.setParam('stops', userLocation[0] + ',' + userLocation[1] + '; ' + photoSpotLocation[0] + ',' + photoSpotLocation[1]);
       gpTask.run(this.getRoute.bind(this));*/
 
+      // アクセストークンの付与
+      if (this.props.token !== null) {
+        routeParams.token = this.props.token;
+      }
+
       // ルート検索の実行
       L.esri.request(routeEndpointUrl + '/solve', routeParams, function (error, response) {
         if (error) {
@@ -387,6 +392,11 @@ var App = function (_Mediator) {
           stops: userLocation[0] + ',' + userLocation[1] + '; ' + yorimichiSpotsLocation + photoSpotLocation[0] + ',' + photoSpotLocation[1],
           travelMode: '{"attributeParameterValues":[{"parameterName":"Restriction Usage","attributeName":"Walking","value":"PROHIBITED"},{"parameterName":"Restriction Usage","attributeName":"Preferred for Pedestrians","value":"PREFER_LOW"},{"parameterName":"Walking Speed (km/h)","attributeName":"WalkTime","value":5},{"parameterName":"Restriction Usage","attributeName":"Avoid Roads Unsuitable for Pedestrians","value":"AVOID_HIGH"}],"description":"Follows paths and roads that allow pedestrian traffic and finds solutions that optimize travel time. The walking speed is set to 5 kilometers per hour.","impedanceAttributeName":"WalkTime","simplificationToleranceUnits":"esriMeters","uturnAtJunctions":"esriNFSBAllowBacktrack","restrictionAttributeNames":["Avoid Roads Unsuitable for Pedestrians","Preferred for Pedestrians","Walking"],"useHierarchy":false,"simplificationTolerance":2,"timeAttributeName":"WalkTime","distanceAttributeName":"Kilometers","type":"WALK","id":"caFAgoThrvUpkFBW","name":"Walking Time"}'
         };
+      }
+
+      // アクセストークンの付与
+      if (this.props.token !== null) {
+        routeParams.token = this.props.token;
       }
 
       // ルート検索の実行
@@ -722,6 +732,10 @@ var App = function (_Mediator) {
 
   return App;
 }(_.Mediator);
+
+App.propTypes = {
+  token: _react2.default.PropTypes.any
+};
 
 App.displayName = 'App';
 
@@ -1539,6 +1553,10 @@ urlParams.forEach(function (urlParam) {
 console.log('appConfig geolocation: ', demo);
 
 var appConfig = exports.appConfig = {
+  oauth: {
+    appLogin: false, // for Esri World Route Service
+    appid: 'kJb12p62K5gGwjNx' // ArcGIS for Developers で発行したアプリID: https://developers.arcgis.com/applications/
+  },
   ui: {
     title: 'PhotoSpot',
     subtitle: 'Finder',
@@ -1575,7 +1593,8 @@ var appConfig = exports.appConfig = {
       className: 'route-path'
     },
     bufferRadius: 250,
-    endpointUrl: '//utility.arcgis.com/usrsvcs/appservices/GfNovy4yk5xdJ9b4/rest/services/World/Route/NAServer/Route_World'
+    endpointUrl: '//route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World'
+    //endpointUrl: '//utility.arcgis.com/usrsvcs/appservices/GfNovy4yk5xdJ9b4/rest/services/World/Route/NAServer/Route_World'
   },
   spotformApp: {
     url: '//www.arcgis.com/apps/GeoForm/index.html?appid=9dd92be784fe4f3f8d5a70624781e3d1'
@@ -1612,22 +1631,52 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 // Copyright (c) 2016 Esri Japan
 
-console.log('appConfig: ', _config2.default);
+var accessToken = void 0;
+var callbacks = [];
+var protocol = window.location.protocol;
+var host = window.location.host;
+var callbackPage = protocol + '//' + host + '/oauth/callback.html';
 
 var mapid = _config2.default.map.id;
 
-var appContents = _react2.default.createElement(
-  'main',
-  null,
-  _react2.default.createElement(_App2.default, {
-    mapid: mapid
-  })
-);
-
 var el = _document2.default.createElement('div');
 var render = (0, _reactUtils.isReactDOMSupported)() ? _reactDom2.default.render : _react2.default.render;
-_document2.default.body.appendChild(el);
-render(appContents, el);
+
+// ArcGIS OAuth 認証
+function oauth(callback) {
+  if (accessToken) {
+    callback(accessToken);
+  } else {
+    callbacks.push(callback);
+    window.open('https://www.arcgis.com/sharing/oauth2/authorize?client_id=' + _config2.default.oauth.appid + '&response_type=token&expiration=20160&redirect_uri=' + window.encodeURIComponent(callbackPage), 'oauth', 'height=400,width=600,menubar=no,location=yes,resizable=yes,scrollbars=yes,status=yes');
+  }
+}
+
+// アプリのレンダリング開始
+function renderApp(token) {
+  var appContents = _react2.default.createElement(
+    'main',
+    null,
+    _react2.default.createElement(_App2.default, {
+      mapid: mapid,
+      token: token
+    })
+  );
+  _document2.default.body.appendChild(el);
+  render(appContents, el);
+}
+
+// OAuth 認証後に実行
+window.oauthCallback = function (token) {
+  renderApp(token);
+};
+
+// アプリ認証を使わない場合はユーザーログイン認証を実施
+if (_config2.default.oauth.appLogin === false) {
+  oauth();
+} else {
+  renderApp(null);
+}
 },{"../lib/utils/react-utils":37,"./App":1,"./config":11,"global/document":54,"react":679,"react-dom":453}],13:[function(require,module,exports){
 'use strict';
 
