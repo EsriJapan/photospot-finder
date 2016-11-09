@@ -6,6 +6,8 @@ import PhotoLayout from './PhotoPage/PhotoLayout';
 import SearchInfo from './PhotoPage/SearchInfo';
 import SavedRouteAlert from './PhotoPage/SavedRouteAlert';
 
+import appConfig from './config';
+
 class PhotoPage extends React.Component {
   constructor (props) {
       super(props);
@@ -32,10 +34,6 @@ class PhotoPage extends React.Component {
       photos = featureCollection.features.map(function (f, i) {
         return f;
       }.bind(this));
-
-      /*photos.sort(function (a, b) {
-        return (b.properties.route_view_count > a.properties.route_view_count) ? 1 : (b.properties.route_view_count < a.properties.route_view_count) ? -1 : 0;
-      });*/
 
       photos.forEach(function (p, i) {
         const attachmentReqUrl = this.props.searchEndpointUrl + '/' + p.properties.OBJECTID + '/attachments';
@@ -92,12 +90,12 @@ class PhotoPage extends React.Component {
         return (
           <PhotoLayout 
             imgUrl={p.url} 
-            name={p.properties.reporter_name}
-            title={p.properties.title} 
-            comment={p.properties.comment_text} 
-            time={p.properties.report_time} 
+            name={p.properties[appConfig.photoSearch.reporterNameField]}
+            title={p.properties[appConfig.photoSearch.titleField]} 
+            comment={p.properties[appConfig.photoSearch.commentField]} 
+            time={p.properties[appConfig.photoSearch.reportDateField]} 
             data={p} 
-            routeViewCount={p.properties.route_view_count}
+            routeViewCount={p.properties[appConfig.photoSearch.routeViewCountField]}
             onSelectPhoto={this.props.onSelectPhoto}
             key={"murophoto_" + i} 
           />
