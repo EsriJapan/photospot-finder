@@ -1635,7 +1635,8 @@ var accessToken = void 0;
 var callbacks = [];
 var protocol = window.location.protocol;
 var host = window.location.host;
-var callbackPage = protocol + '//' + host + '/oauth/callback.html';
+var pathname = window.location.pathname;
+var callbackPage = protocol + '//' + host + pathname + 'oauth/callback.html';
 
 var mapid = _config2.default.map.id;
 

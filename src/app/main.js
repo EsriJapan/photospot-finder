@@ -14,7 +14,8 @@ let accessToken;
 let callbacks = [];
 const protocol = window.location.protocol;
 const host = window.location.host;
-const callbackPage = protocol + '//' + host + '/oauth/callback.html';
+const pathname = window.location.pathname;
+const callbackPage = protocol + '//' + host + pathname + 'oauth/callback.html';
 
 const mapid = appConfig.map.id;
 
