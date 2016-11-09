@@ -1,4 +1,4 @@
-# [Photospot Finder](https://esrijapan.github.io/photospot-finder/)
+# [Photospot Finder](https://esrijapan.github.io/photospot-finder/?demo)
 
 室蘭市の観光ハッカソン向けに作成したアプリです。
 
@@ -11,7 +11,7 @@
 
 ![](img/app-screen.png)
 
-[デモ](https://esrijapan.github.io/photospot-finder/) の参照には [ArcGIS for Developers](https://developers.arcgis.com/) の[アカウント (無償)](http://esrijapan.github.io/arcgis-dev-resources/get-dev-account/) が必要です。ルート案内は最大で 1,250 回/月まで可能です。毎回、寄り道ルートを含めることを想定した場合は最大で 92 回/月になるのでご注意ください。
+[デモ](https://esrijapan.github.io/photospot-finder/?demo) の参照には [ArcGIS for Developers](https://developers.arcgis.com/) の[アカウント (無償)](http://esrijapan.github.io/arcgis-dev-resources/get-dev-account/) が必要です。ルート案内は最大で 1,250 回/月まで可能です。毎回、寄り道ルートを含めることを想定した場合は最大で 92 回/月になるのでご注意ください。
 
 
 ## Usage
