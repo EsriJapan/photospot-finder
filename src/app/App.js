@@ -92,6 +92,8 @@ class App extends Mediator {
       this.selectedPhoto = null;
       // 寄り道スポットデータ
       this.yorimichiSpots = [];
+      // アクセストークン
+      this.token = null;
 
       // this バインド地獄（アローファンクション使いたい）
       this.updateRouteViewCount = this.updateRouteViewCount.bind(this);
@@ -181,55 +183,77 @@ class App extends Mediator {
     });
   }
 
+  // ユーザーログイン認証
+  oauth (data) {
+    const protocol = window.location.protocol;
+    const host = window.location.host;
+    const pathname = window.location.pathname;
+    const callbackPage = protocol + '//' + host + pathname + 'oauth/callback.html';
+
+    // OAuth 認証後に実行
+    window.oauthCallback = function (token) {
+      this.token = token;
+      this.onSelectPhoto(data);
+    }.bind(this);
+
+    window.open('https://www.arcgis.com/sharing/oauth2/authorize?client_id=' + appConfig.oauth.appid + '&response_type=token&expiration=20160&redirect_uri=' + window.encodeURIComponent(callbackPage), 'oauth', 'height=400,width=600,menubar=no,location=yes,resizable=yes,scrollbars=yes,status=yes');
+  }
+
   // 写真の選択（ルート検索開始ボタンをクリック後に実行）
   onSelectPhoto (data) {
-    console.log(data);
-    const routeEndpointUrl = appConfig.route.endpointUrl;
-    const photoSpotLocation = data.geometry.coordinates;
-    const userLocation = [this.state.userCurrentPosition[1], this.state.userCurrentPosition[0]];
-    let routeParams;
-
-    this.selectedPhoto = data;
-
-    // ルートビュー数の更新
-    this.updateRouteViewCount(data);
-
-    // トラベルモードの設定（トラベルモードスイッチの状態で分岐）
-    if (this.state.travelMode === 1) {
-      routeParams = {
-        stops: userLocation[0] + ',' + userLocation[1] + '; ' + photoSpotLocation[0] + ',' + photoSpotLocation[1]
-      }
-    } else if (this.state.travelMode === 0) {
-      routeParams = {
-        stops: userLocation[0] + ',' + userLocation[1] + '; ' + photoSpotLocation[0] + ',' + photoSpotLocation[1],
-        travelMode: '{"attributeParameterValues":[{"parameterName":"Restriction Usage","attributeName":"Walking","value":"PROHIBITED"},{"parameterName":"Restriction Usage","attributeName":"Preferred for Pedestrians","value":"PREFER_LOW"},{"parameterName":"Walking Speed (km/h)","attributeName":"WalkTime","value":5},{"parameterName":"Restriction Usage","attributeName":"Avoid Roads Unsuitable for Pedestrians","value":"AVOID_HIGH"}],"description":"Follows paths and roads that allow pedestrian traffic and finds solutions that optimize travel time. The walking speed is set to 5 kilometers per hour.","impedanceAttributeName":"WalkTime","simplificationToleranceUnits":"esriMeters","uturnAtJunctions":"esriNFSBAllowBacktrack","restrictionAttributeNames":["Avoid Roads Unsuitable for Pedestrians","Preferred for Pedestrians","Walking"],"useHierarchy":false,"simplificationTolerance":2,"timeAttributeName":"WalkTime","distanceAttributeName":"Kilometers","type":"WALK","id":"caFAgoThrvUpkFBW","name":"Walking Time"}'
-      }
+    // アプリ認証を使わない場合はユーザーログイン認証を実施
+    if (appConfig.oauth.appLogin === false && this.token === null) {
+      this.oauth(data);
     }
+    else {
+      console.log(data);
+      const routeEndpointUrl = appConfig.route.endpointUrl;
+      const photoSpotLocation = data.geometry.coordinates;
+      const userLocation = [this.state.userCurrentPosition[1], this.state.userCurrentPosition[0]];
+      let routeParams;
 
-    /*const gpService = L.esri.GP.service({
-      url: routeEndpointUrl,
-      useCors: false
-    });
-    const gpTask = gpService.createTask();
-    gpTask.setParam('stops', userLocation[0] + ',' + userLocation[1] + '; ' + photoSpotLocation[0] + ',' + photoSpotLocation[1]);
-    gpTask.run(this.getRoute.bind(this));*/
+      this.selectedPhoto = data;
 
-    // アクセストークンの付与
-    if (this.props.token !== null) {
-      routeParams.token = this.props.token;
-    }
+      // ルートビュー数の更新
+      this.updateRouteViewCount(data);
 
-    // ルート検索の実行
-    L.esri.request(routeEndpointUrl + '/solve', routeParams, function(error, response) {
-      if(error){
-        console.log(error);
-      } else {
-        this.getRoute(response.routes, data.properties.title, true);
+      // トラベルモードの設定（トラベルモードスイッチの状態で分岐）
+      if (this.state.travelMode === 1) {
+        routeParams = {
+          stops: userLocation[0] + ',' + userLocation[1] + '; ' + photoSpotLocation[0] + ',' + photoSpotLocation[1]
+        }
+      } else if (this.state.travelMode === 0) {
+        routeParams = {
+          stops: userLocation[0] + ',' + userLocation[1] + '; ' + photoSpotLocation[0] + ',' + photoSpotLocation[1],
+          travelMode: '{"attributeParameterValues":[{"parameterName":"Restriction Usage","attributeName":"Walking","value":"PROHIBITED"},{"parameterName":"Restriction Usage","attributeName":"Preferred for Pedestrians","value":"PREFER_LOW"},{"parameterName":"Walking Speed (km/h)","attributeName":"WalkTime","value":5},{"parameterName":"Restriction Usage","attributeName":"Avoid Roads Unsuitable for Pedestrians","value":"AVOID_HIGH"}],"description":"Follows paths and roads that allow pedestrian traffic and finds solutions that optimize travel time. The walking speed is set to 5 kilometers per hour.","impedanceAttributeName":"WalkTime","simplificationToleranceUnits":"esriMeters","uturnAtJunctions":"esriNFSBAllowBacktrack","restrictionAttributeNames":["Avoid Roads Unsuitable for Pedestrians","Preferred for Pedestrians","Walking"],"useHierarchy":false,"simplificationTolerance":2,"timeAttributeName":"WalkTime","distanceAttributeName":"Kilometers","type":"WALK","id":"caFAgoThrvUpkFBW","name":"Walking Time"}'
+        }
       }
-    }.bind(this));
 
-    // 地図ページへ表示切替
-    this.showMapPage();
+      /*const gpService = L.esri.GP.service({
+        url: routeEndpointUrl,
+        useCors: false
+      });
+      const gpTask = gpService.createTask();
+      gpTask.setParam('stops', userLocation[0] + ',' + userLocation[1] + '; ' + photoSpotLocation[0] + ',' + photoSpotLocation[1]);
+      gpTask.run(this.getRoute.bind(this));*/
+
+      // アクセストークンの付与
+      if (this.token !== null) {
+        routeParams.token = this.token;
+      }
+
+      // ルート検索の実行
+      L.esri.request(routeEndpointUrl + '/solve', routeParams, function(error, response) {
+        if(error){
+          console.log(error);
+        } else {
+          this.getRoute(response.routes, data.properties.title, true);
+        }
+      }.bind(this));
+
+      // 地図ページへ表示切替
+      this.showMapPage();
+    }
   }
 
   // 写真ページのすべての写真が読み込まれた時点で実行
@@ -326,8 +350,8 @@ class App extends Mediator {
     }
 
     // アクセストークンの付与
-    if (this.props.token !== null) {
-      routeParams.token = this.props.token;
+    if (this.token !== null) {
+      routeParams.token = this.token;
     }
 
     // ルート検索の実行
@@ -633,10 +657,6 @@ class App extends Mediator {
     );
   }
 }
-
-App.propTypes = {
-  token: React.PropTypes.any
-};
 
 App.displayName = 'App';
 
