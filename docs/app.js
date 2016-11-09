@@ -228,11 +228,14 @@ var App = function (_Mediator) {
     key: 'updateRouteViewCount',
     value: function updateRouteViewCount(data) {
       // ルートビュー数の値を加算してフィーチャサービスを更新
-      data.properties.route_view_count += 1;
+      data.properties[_config2.default.photoSearch.routeViewCountField] += 1;
       this.photospotLayer.updateFeature(data, function (response) {
         console.log(response);
       });
     }
+
+    // ユーザーログイン認証
+
   }, {
     key: 'oauth',
     value: function oauth(data) {
@@ -300,7 +303,7 @@ var App = function (_Mediator) {
           if (error) {
             console.log(error);
           } else {
-            this.getRoute(response.routes, data.properties.title, true);
+            this.getRoute(response.routes, data.properties[_config2.default.photoSearch.titleField], true);
           }
         }.bind(this));
 
@@ -428,7 +431,7 @@ var App = function (_Mediator) {
           console.log(error);
         } else {
           var selectedPhoto = this.selectedPhoto;
-          this.getRoute(response.routes, selectedPhoto.properties.title, false);
+          this.getRoute(response.routes, selectedPhoto.properties[_config2.default.photoSearch.titleField], false);
         }
       }.bind(this));
     }
@@ -1102,6 +1105,10 @@ var _SavedRouteAlert = require('./PhotoPage/SavedRouteAlert');
 
 var _SavedRouteAlert2 = _interopRequireDefault(_SavedRouteAlert);
 
+var _config = require('./config');
+
+var _config2 = _interopRequireDefault(_config);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -1145,10 +1152,6 @@ var PhotoPage = function (_React$Component) {
         photos = featureCollection.features.map(function (f, i) {
           return f;
         }.bind(this));
-
-        /*photos.sort(function (a, b) {
-          return (b.properties.route_view_count > a.properties.route_view_count) ? 1 : (b.properties.route_view_count < a.properties.route_view_count) ? -1 : 0;
-        });*/
 
         photos.forEach(function (p, i) {
           var attachmentReqUrl = this.props.searchEndpointUrl + '/' + p.properties.OBJECTID + '/attachments';
@@ -1206,12 +1209,12 @@ var PhotoPage = function (_React$Component) {
         Photos = this.state.photos.map(function (p, i) {
           return _react2.default.createElement(_PhotoLayout2.default, {
             imgUrl: p.url,
-            name: p.properties.reporter_name,
-            title: p.properties.title,
-            comment: p.properties.comment_text,
-            time: p.properties.report_time,
+            name: p.properties[_config2.default.photoSearch.reporterNameField],
+            title: p.properties[_config2.default.photoSearch.titleField],
+            comment: p.properties[_config2.default.photoSearch.commentField],
+            time: p.properties[_config2.default.photoSearch.reportDateField],
             data: p,
-            routeViewCount: p.properties.route_view_count,
+            routeViewCount: p.properties[_config2.default.photoSearch.routeViewCountField],
             onSelectPhoto: this.props.onSelectPhoto,
             key: "murophoto_" + i
           });
@@ -1251,7 +1254,7 @@ PhotoPage.propTypes = {
 PhotoPage.displayName = 'PhotoPage';
 
 exports.default = PhotoPage;
-},{"./PhotoPage/PhotoLayout":7,"./PhotoPage/SavedRouteAlert":8,"./PhotoPage/SearchInfo":9,"react":679,"react-bootstrap":287}],7:[function(require,module,exports){
+},{"./PhotoPage/PhotoLayout":7,"./PhotoPage/SavedRouteAlert":8,"./PhotoPage/SearchInfo":9,"./config":11,"react":679,"react-bootstrap":287}],7:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1561,6 +1564,7 @@ exports.default = SpotFormPage;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+// URL 末尾に ?demo を付記するとデモ用のアプリで起動 (現在位置を室蘭市某所の固定)
 var demo = true;
 var urlParams = location.search.substring(1).split('&');
 urlParams.forEach(function (urlParam) {
@@ -1577,29 +1581,34 @@ var appConfig = exports.appConfig = {
     appid: 'kJb12p62K5gGwjNx' // ArcGIS for Developers で発行したアプリID: https://developers.arcgis.com/applications/
   },
   ui: {
-    title: 'PhotoSpot',
-    subtitle: 'Finder',
-    iconUrl: 'img/icon.png'
+    title: 'PhotoSpot', // ヘッダーのタイトル (太字)
+    subtitle: 'Finder', // ヘッダーのサブタイトル
+    iconUrl: 'img/icon.png' // ヘッダーのアプリアイコン
   },
   map: {
-    id: '956c47b1c2ea40a0b6530b3bb64af437',
+    id: '956c47b1c2ea40a0b6530b3bb64af437', // ArcGIS Web マップ ID: http://esrijapan.github.io/arcgis-dev-resources/create-webmap/
     default: {
-      center: [42.315, 140.982]
+      center: [42.315, 140.982] // 初期表示の中心座標
     },
-    geolocation: demo
+    geolocation: demo // 現在位置取得の有無
   },
   photoSearch: {
     radius: {
-      walk: 2500,
-      car: 10000
+      walk: 2500, // 写真スポット検索範囲 (徒歩)
+      car: 10000 // 写真スポット検索範囲 (自動車)
     },
-    endpointUrl: '//services.arcgis.com/wlVTGRSYTzAbjjiC/arcgis/rest/services/photospot_muroran/FeatureServer/0'
+    endpointUrl: '//services.arcgis.com/wlVTGRSYTzAbjjiC/arcgis/rest/services/photospot_muroran/FeatureServer/0', // 写真スポット エンドポイント URL
+    titleField: 'title', // タイトルのフィールド
+    reporterNameField: 'reporter_name', // 投稿者名のフィールド
+    commentField: 'comment_text', // コメントのフィールド
+    reportDateField: 'report_time', // 投稿日時のフィールド
+    routeViewCountField: 'route_view_count' // ルートビュー数のフィールド
   },
   kujiran: {
-    endpointUrl: '//services.arcgis.com/wlVTGRSYTzAbjjiC/arcgis/rest/services/photospot_kujiran/FeatureServer/0'
+    endpointUrl: '//services.arcgis.com/wlVTGRSYTzAbjjiC/arcgis/rest/services/photospot_kujiran/FeatureServer/0' // くじらんスポット エンドポイント URL
   },
   yorimichiSpot: {
-    endpointUrl: '//services.arcgis.com/wlVTGRSYTzAbjjiC/arcgis/rest/services/室蘭市の観光情報(総務省公共クラウド)/FeatureServer/0'
+    endpointUrl: '//services.arcgis.com/wlVTGRSYTzAbjjiC/arcgis/rest/services/室蘭市の観光情報(総務省公共クラウド)/FeatureServer/0' // 観光スポット エンドポイント URL
   },
   route: {
     style: {
@@ -1611,12 +1620,12 @@ var appConfig = exports.appConfig = {
       dashOffset: '1000',
       className: 'route-path'
     },
-    bufferRadius: 250,
-    endpointUrl: '//route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World'
+    bufferRadius: 250, // ルート バッファー半径 (寄り道スポット、くじらんの検索に使用)
+    endpointUrl: '//route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World' // ルート検索サービス エンドポイント URL
     //endpointUrl: '//utility.arcgis.com/usrsvcs/appservices/GfNovy4yk5xdJ9b4/rest/services/World/Route/NAServer/Route_World'
   },
   spotformApp: {
-    url: '//www.arcgis.com/apps/GeoForm/index.html?appid=9dd92be784fe4f3f8d5a70624781e3d1'
+    url: '//www.arcgis.com/apps/GeoForm/index.html?appid=9dd92be784fe4f3f8d5a70624781e3d1' // 写真スポット投稿フォーム アプリ URL
   }
 };
 

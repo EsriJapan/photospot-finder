@@ -177,7 +177,7 @@ class App extends Mediator {
   // ルートビュー数の更新
   updateRouteViewCount (data) {
     // ルートビュー数の値を加算してフィーチャサービスを更新
-    data.properties.route_view_count += 1;
+    data.properties[appConfig.photoSearch.routeViewCountField] += 1;
     this.photospotLayer.updateFeature(data, function (response) {
       console.log(response);
     });
@@ -247,7 +247,7 @@ class App extends Mediator {
         if(error){
           console.log(error);
         } else {
-          this.getRoute(response.routes, data.properties.title, true);
+          this.getRoute(response.routes, data.properties[appConfig.photoSearch.titleField], true);
         }
       }.bind(this));
 
@@ -360,7 +360,7 @@ class App extends Mediator {
         console.log(error);
       } else {
         const selectedPhoto = this.selectedPhoto;
-        this.getRoute(response.routes, selectedPhoto.properties.title, false);
+        this.getRoute(response.routes, selectedPhoto.properties[appConfig.photoSearch.titleField], false);
       }
     }.bind(this));
   }
