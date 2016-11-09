@@ -10,7 +10,7 @@ class PhotoLayout extends React.Component {
   }
 
   _onSelectPhoto () {
-    this.props.onSelectPhoto(this.props.data);
+    this.props.onSelectPhoto(this.props.data, this.props.imgUrl);
   }
 
   render () {

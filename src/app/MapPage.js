@@ -22,10 +22,11 @@ class MapPage extends React.Component {
         .route-info {
           color: #fff;
           background-color: #000;
-          opacity: 0.7;
+          opacity: 0.9;
           bottom: 21px;
           width: 100%;
-          height: 105px;
+          height: 135px;
+          padding-top: 20px;
           position: absolute;
           z-index: 999;
         }
@@ -46,6 +47,30 @@ class MapPage extends React.Component {
           margin: 10px;
           height: 20px;
         }
+        .destination-photo {
+          position: absolute;
+          top: -35px;
+          width: 70px;
+          height: 70px;
+          margin: 0 auto 22px;
+          left: 0;
+          right: 0;
+          border: 5px solid #000;
+          border-radius: 50%;
+          overflow: hidden;
+        }
+        .destination-photo > img {
+          display: block;
+          border-radius: 50%;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          -webkit-transform: translate(-50%, -50%);
+          -ms-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+          width: auto;
+          height: 100%;
+        }
         .kujiran-count {
           margin-right: 10px;
           text-align: right;
@@ -55,7 +80,7 @@ class MapPage extends React.Component {
         }
         `}</style>
         <MapView mapid={this.props.mapid} height={window.innerHeight - 50 + "px"} />
-        <RouteInfo route={this.props.route} time={this.props.routeTime} distance={this.props.routeDistance} destination={this.props.destination} travelMode={this.props.travelMode} kujiranCount={this.props.kujiranCount} />
+        <RouteInfo route={this.props.route} time={this.props.routeTime} distance={this.props.routeDistance} destination={this.props.destination} travelMode={this.props.travelMode} destinationPhoto={this.props.destinationPhoto} kujiranCount={this.props.kujiranCount} />
         <YorimichiAlert yorimichiCount={this.props.yorimichiCount} visibility={this.props.yorimichiAlertVisibility} onClickYesButton={this.props.onClickYorimichiYesButton} onClickNoButton={this.props.onClickYorimichiNoButton} />
       </div>
     );
@@ -71,6 +96,7 @@ MapPage.propTypes = {
   destination: React.PropTypes.string,
   travelMode: React.PropTypes.number,
   kujiranCount: React.PropTypes.number,
+  destinationPhoto: React.PropTypes.string,
   yorimichiCount: React.PropTypes.number,
   yorimichiAlertVisibility: React.PropTypes.bool,
   onClickYorimichiYesButton: React.PropTypes.func,

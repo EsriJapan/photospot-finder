@@ -78,6 +78,7 @@ var App = function (_Mediator) {
     _this.state.mapPageKujiranCount = 0;
     _this.state.mapPageYorimichiCount = 0;
     _this.state.mapPageYorimichiAlertVisibility = false;
+    _this.state.mapPageDestinationPhoto = 'img/blank.png';
 
     // 写真スポット投稿ページの状態
     _this.state.spotformPageVisibility = false;
@@ -168,7 +169,10 @@ var App = function (_Mediator) {
       if (routeInfoString !== null) {
         var routeInfo = JSON.parse(routeInfoString);
         this.getRoute(routeInfo.routes, routeInfo.destination, false);
-        this.setState({ savedRoute: true });
+        this.setState({
+          savedRoute: true,
+          mapPageDestinationPhoto: routeInfo.destinationPhoto
+        });
         setTimeout(function () {
           this.setState({ savedRoute: false });
         }.bind(this), 15000);
@@ -238,7 +242,7 @@ var App = function (_Mediator) {
 
   }, {
     key: 'oauth',
-    value: function oauth(data) {
+    value: function oauth(data, imgUrl) {
       var protocol = window.location.protocol;
       var host = window.location.host;
       var pathname = window.location.pathname;
@@ -247,7 +251,7 @@ var App = function (_Mediator) {
       // OAuth 認証後に実行
       window.oauthCallback = function (token) {
         this.token = token;
-        this.onSelectPhoto(data);
+        this.onSelectPhoto(data, imgUrl);
       }.bind(this);
 
       window.open('https://www.arcgis.com/sharing/oauth2/authorize?client_id=' + _config2.default.oauth.appid + '&response_type=token&expiration=20160&redirect_uri=' + window.encodeURIComponent(callbackPage), 'oauth', 'height=400,width=600,menubar=no,location=yes,resizable=yes,scrollbars=yes,status=yes');
@@ -257,10 +261,10 @@ var App = function (_Mediator) {
 
   }, {
     key: 'onSelectPhoto',
-    value: function onSelectPhoto(data) {
+    value: function onSelectPhoto(data, imgUrl) {
       // アプリ認証を使わない場合はユーザーログイン認証を実施
       if (_config2.default.oauth.appLogin === false && this.token === null) {
-        this.oauth(data);
+        this.oauth(data, imgUrl);
       } else {
         console.log(data);
         var routeEndpointUrl = _config2.default.route.endpointUrl;
@@ -269,6 +273,8 @@ var App = function (_Mediator) {
         var routeParams = void 0;
 
         this.selectedPhoto = data;
+
+        this.setState({ mapPageDestinationPhoto: imgUrl });
 
         // ルートビュー数の更新
         this.updateRouteViewCount(data);
@@ -533,7 +539,8 @@ var App = function (_Mediator) {
     value: function saveRoute(routes, destination) {
       var routeInfo = {
         routes: routes,
-        destination: destination
+        destination: destination,
+        destinationPhoto: this.state.mapPageDestinationPhoto
       };
       var routeInfoString = JSON.stringify(routeInfo); // ルートと目的地のオブジェクトを文字列に変換
       localStorage.setItem('photospot-finder-route', routeInfoString);
@@ -739,6 +746,7 @@ var App = function (_Mediator) {
                 routeDistance: this.state.mapPageRouteDistance,
                 destination: this.state.mapPageDestination,
                 travelMode: this.state.mapPageTravelMode,
+                destinationPhoto: this.state.mapPageDestinationPhoto,
                 kujiranCount: this.state.mapPageKujiranCount,
                 yorimichiCount: this.state.mapPageYorimichiCount,
                 yorimichiAlertVisibility: this.state.mapPageYorimichiAlertVisibility,
@@ -878,10 +886,10 @@ var MapPage = function (_React$Component) {
         _react2.default.createElement(
           'style',
           { type: 'text/css' },
-          '\n        .route-info {\n          color: #fff;\n          background-color: #000;\n          opacity: 0.7;\n          bottom: 21px;\n          width: 100%;\n          height: 105px;\n          position: absolute;\n          z-index: 999;\n        }\n        .route-info > h3 {\n          text-align: center;\n          width: 100%;\n          font-weight: 100;\n          margin: 0;\n        }\n        .route-info > p {\n          margin-top: 10px;\n          margin-left: 15px;\n          font-weight: 100;\n        }\n        .route-info > img {\n          position: absolute;\n          right: 0;\n          margin: 10px;\n          height: 20px;\n        }\n        .kujiran-count {\n          margin-right: 10px;\n          text-align: right;\n        }\n        .kujiran-count > img {\n          height: 30px;\n        }\n        '
+          '\n        .route-info {\n          color: #fff;\n          background-color: #000;\n          opacity: 0.9;\n          bottom: 21px;\n          width: 100%;\n          height: 135px;\n          padding-top: 20px;\n          position: absolute;\n          z-index: 999;\n        }\n        .route-info > h3 {\n          text-align: center;\n          width: 100%;\n          font-weight: 100;\n          margin: 0;\n        }\n        .route-info > p {\n          margin-top: 10px;\n          margin-left: 15px;\n          font-weight: 100;\n        }\n        .route-info > img {\n          position: absolute;\n          right: 0;\n          margin: 10px;\n          height: 20px;\n        }\n        .destination-photo {\n          position: absolute;\n          top: -35px;\n          width: 70px;\n          height: 70px;\n          margin: 0 auto 22px;\n          left: 0;\n          right: 0;\n          border: 5px solid #000;\n          border-radius: 50%;\n          overflow: hidden;\n        }\n        .destination-photo > img {\n          display: block;\n          border-radius: 50%;\n          position: absolute;\n          top: 50%;\n          left: 50%;\n          -webkit-transform: translate(-50%, -50%);\n          -ms-transform: translate(-50%, -50%);\n          transform: translate(-50%, -50%);\n          width: auto;\n          height: 100%;\n        }\n        .kujiran-count {\n          margin-right: 10px;\n          text-align: right;\n        }\n        .kujiran-count > img {\n          height: 30px;\n        }\n        '
         ),
         _react2.default.createElement(_.MapView, { mapid: this.props.mapid, height: window.innerHeight - 50 + "px" }),
-        _react2.default.createElement(_RouteInfo2.default, { route: this.props.route, time: this.props.routeTime, distance: this.props.routeDistance, destination: this.props.destination, travelMode: this.props.travelMode, kujiranCount: this.props.kujiranCount }),
+        _react2.default.createElement(_RouteInfo2.default, { route: this.props.route, time: this.props.routeTime, distance: this.props.routeDistance, destination: this.props.destination, travelMode: this.props.travelMode, destinationPhoto: this.props.destinationPhoto, kujiranCount: this.props.kujiranCount }),
         _react2.default.createElement(_YorimichiAlert2.default, { yorimichiCount: this.props.yorimichiCount, visibility: this.props.yorimichiAlertVisibility, onClickYesButton: this.props.onClickYorimichiYesButton, onClickNoButton: this.props.onClickYorimichiNoButton })
       );
     }
@@ -899,6 +907,7 @@ MapPage.propTypes = {
   destination: _react2.default.PropTypes.string,
   travelMode: _react2.default.PropTypes.number,
   kujiranCount: _react2.default.PropTypes.number,
+  destinationPhoto: _react2.default.PropTypes.string,
   yorimichiCount: _react2.default.PropTypes.number,
   yorimichiAlertVisibility: _react2.default.PropTypes.bool,
   onClickYorimichiYesButton: _react2.default.PropTypes.func,
@@ -955,6 +964,11 @@ var RouteInfo = function (_React$Component) {
       return _react2.default.createElement(
         'div',
         { className: 'route-info', style: { display: visibility } },
+        _react2.default.createElement(
+          'div',
+          { className: 'destination-photo' },
+          _react2.default.createElement('img', { src: this.props.destinationPhoto })
+        ),
         _react2.default.createElement('img', { src: travelModeIcon }),
         _react2.default.createElement(
           'p',
@@ -990,6 +1004,7 @@ RouteInfo.propTypes = {
   distance: _react2.default.PropTypes.number,
   destination: _react2.default.PropTypes.string,
   travelMode: _react2.default.PropTypes.number,
+  destinationPhoto: _react2.default.PropTypes.string,
   kujiranCount: _react2.default.PropTypes.number
 };
 
@@ -1227,7 +1242,7 @@ var PhotoPage = function (_React$Component) {
         _react2.default.createElement(
           'style',
           { type: 'text/css' },
-          '\n        .murophoto-frame {\n          color: #fff;\n          text-shadow: 1px 1px 1px #333, -1px 1px 1px #333, 1px -1px 1px #333, -1px -1px 1px #333;\n          position: relative;\n          transition: all 0.3s;\n        }\n        .murophoto-frame:hover {\n          opacity: 0.8;\n          border: solid #333 3px;\n        }\n        .to-route {\n          position: absolute;\n          top: 0;\n          left: 0;\n          right: 0;\n          bottom: 0;\n          margin: auto;\n          height: 28px;\n          width: 150px;\n          padding-top: 7px;\n          color: #fff;\n          font-weight: bold;\n          background-color: #333;\n          border-radius: 15px;\n          border: solid 1px #999;\n          text-shadow: none;\n          text-align: center;\n          font-size: 0.7em;\n          opacity: 0;\n          transition: all 0.3s;\n          cursor: pointer;\n        }\n        .to-route:hover {\n          color: #333;\n          background-color: #fff;\n          border: solid 1px #fff;\n        }\n        .murophoto-frame:hover > div.to-route {\n          opacity: 1;\n        }\n        .murophoto-frame > h5 {\n          position: absolute;\n          margin: 15px;\n          bottom: 30px;\n          text-align: right;\n          width: 90%;\n        }\n        .murophoto-frame > p {\n          position: absolute;\n          bottom: 5px;\n          margin: 15px;\n          font-size: 0.8em;\n          text-align: right;\n          width: 90%;\n        }\n        .route-view-count {\n          position: absolute;\n          margin: 15px;\n          top: 0;\n          text-align: left;\n          width: 90%;\n        }\n        .route-view-count > .label {\n          text-shadow: none;\n        }\n        .murophoto {\n          width: 100%;\n        }\n        .bootstrap-switch {\n          border-radius: 16px;\n        }\n        .bootstrap-switch.bootstrap-switch-small .bootstrap-switch-handle-on, .bootstrap-switch.bootstrap-switch-small .bootstrap-switch-handle-off, .bootstrap-switch.bootstrap-switch-small .bootstrap-switch-label {\n          border-radius: 14px;\n        }\n        '
+          '\n        .murophoto-frame {\n          color: #fff;\n          text-shadow: 1px 1px 1px #333, -1px 1px 1px #333, 1px -1px 1px #333, -1px -1px 1px #333;\n          position: relative;\n          transition: all 0.3s;\n          min-height: 150px;\n        }\n        .murophoto-frame:hover {\n          opacity: 0.8;\n          border: solid #333 3px;\n        }\n        .to-route {\n          position: absolute;\n          top: 0;\n          left: 0;\n          right: 0;\n          bottom: 0;\n          margin: auto;\n          height: 28px;\n          width: 150px;\n          padding-top: 7px;\n          color: #fff;\n          font-weight: bold;\n          background-color: #333;\n          border-radius: 15px;\n          border: solid 1px #999;\n          text-shadow: none;\n          text-align: center;\n          font-size: 0.7em;\n          opacity: 0;\n          transition: all 0.3s;\n          cursor: pointer;\n        }\n        .to-route:hover {\n          color: #333;\n          background-color: #fff;\n          border: solid 1px #fff;\n        }\n        .murophoto-frame:hover > div.to-route {\n          opacity: 1;\n        }\n        .murophoto-frame > h5 {\n          position: absolute;\n          margin: 15px;\n          bottom: 30px;\n          text-align: right;\n          width: 90%;\n        }\n        .murophoto-frame > p {\n          position: absolute;\n          bottom: 5px;\n          margin: 15px;\n          font-size: 0.8em;\n          text-align: right;\n          width: 90%;\n        }\n        .route-view-count {\n          position: absolute;\n          margin: 15px;\n          top: 0;\n          text-align: left;\n          width: 90%;\n        }\n        .route-view-count > .label {\n          text-shadow: none;\n        }\n        .murophoto {\n          width: 100%;\n        }\n        .bootstrap-switch {\n          border-radius: 16px;\n        }\n        .bootstrap-switch.bootstrap-switch-small .bootstrap-switch-handle-on, .bootstrap-switch.bootstrap-switch-small .bootstrap-switch-handle-off, .bootstrap-switch.bootstrap-switch-small .bootstrap-switch-label {\n          border-radius: 14px;\n        }\n        '
         ),
         Alert,
         Photos,
@@ -1292,7 +1307,7 @@ var PhotoLayout = function (_React$Component) {
   _createClass(PhotoLayout, [{
     key: '_onSelectPhoto',
     value: function _onSelectPhoto() {
-      this.props.onSelectPhoto(this.props.data);
+      this.props.onSelectPhoto(this.props.data, this.props.imgUrl);
     }
   }, {
     key: 'render',
