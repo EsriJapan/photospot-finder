@@ -60,6 +60,9 @@ export const appConfig = {
   },
   spotformApp: {
     url: '//www.arcgis.com/apps/GeoForm/index.html?appid=9dd92be784fe4f3f8d5a70624781e3d1' // 写真スポット投稿フォーム アプリ URL
+  },
+  kujiranformApp: {
+    url: '//www.arcgis.com/apps/GeoForm/index.html?appid=07dce0330c664f4d96f0d8dc27392b8c' // くじらんスポット投稿フォーム アプリ URL
   }
 };
 

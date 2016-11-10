@@ -47,6 +47,10 @@ class App extends Mediator {
       this.state.spotformPageVisibility = false;
       this.state.spotformPageUrl = appConfig.spotformApp.url;
 
+      // くじらんスポット投稿ページの状態
+      this.state.kujiranformPageVisibility = false;
+      this.state.kujiranformPageUrl = appConfig.kujiranformApp.url;
+
       // 現在位置アイコン
       this.userIcon = L.vectorIcon({
         className: 'user-icon',
@@ -106,6 +110,7 @@ class App extends Mediator {
       this.showMapPage = this.showMapPage.bind(this);
       this.showPhotoPage = this.showPhotoPage.bind(this);
       this.showSpotFormPage = this.showSpotFormPage.bind(this);
+      this.showKujiranFormPage = this.showKujiranFormPage.bind(this);
       this.hideLoadPage = this.hideLoadPage.bind(this);
       this.findYorimichiSpots = this.findYorimichiSpots.bind(this);
       this.onClickYorimichiYesButton = this.onClickYorimichiYesButton.bind(this);
@@ -477,7 +482,8 @@ class App extends Mediator {
     this.setState({
       photoPageVisibility: false,
       mapPageVisibility: true,
-      spotformPageVisibility: false
+      spotformPageVisibility: false,
+      kujiranformPageVisibility: false
     });
     const map = this.state.map;
     map.invalidateSize(true);
@@ -489,7 +495,8 @@ class App extends Mediator {
     this.setState({
       photoPageVisibility: true,
       mapPageVisibility: false,
-      spotformPageVisibility: false
+      spotformPageVisibility: false,
+      kujiranformPageVisibility: false
     });
   }
 
@@ -498,7 +505,18 @@ class App extends Mediator {
     this.setState({
       photoPageVisibility: false,
       mapPageVisibility: false,
-      spotformPageVisibility: true
+      spotformPageVisibility: true,
+      kujiranformPageVisibility: false
+    });
+  }
+
+  // くじらんスポット投稿ページへの表示切替
+  showKujiranFormPage () {
+    this.setState({
+      photoPageVisibility: false,
+      mapPageVisibility: false,
+      spotformPageVisibility: false,
+      kujiranformPageVisibility: true
     });
   }
 
@@ -617,8 +635,8 @@ class App extends Mediator {
               <NavItem eventKey={1} href="#" onClick={this.showPhotoPage}><Glyphicon glyph="picture" /> 写真</NavItem>
               <NavItem eventKey={2} href="#" onClick={this.showMapPage}><Glyphicon glyph="map-marker" /> 地図</NavItem>
               <NavItem eventKey={3} href="#" onClick={this.showSpotFormPage}><Glyphicon glyph="send" /> 写真スポットの投稿</NavItem>
-              <NavItem eventKey={4} href="#"><Glyphicon glyph="send" /> くじらんスポットの投稿 (作成中)</NavItem>
-              <NavItem eventKey={5} href="https://github.com/EsriJapan/photospot-finder">GitHub</NavItem>
+              <NavItem eventKey={4} href="#" onClick={this.showKujiranFormPage}><Glyphicon glyph="send" /> くじらんスポットの投稿</NavItem>
+              <NavItem eventKey={5} href="https://github.com/EsriJapan/photospot-finder">GitHub (外部リンク)</NavItem>
             </Nav>
           </Navbar.Collapse>
         </Navbar>
@@ -657,6 +675,10 @@ class App extends Mediator {
               <SpotFormPage 
                 visibility={this.state.spotformPageVisibility} 
                 url={this.state.spotformPageUrl} 
+              />
+              <SpotFormPage 
+                visibility={this.state.kujiranformPageVisibility} 
+                url={this.state.kujiranformPageUrl} 
               />
             </Col>
           </Row>
