@@ -1764,7 +1764,7 @@ var SpotFormPage = function (_React$Component) {
       return _react2.default.createElement(
         'div',
         { className: 'spotformpage', style: { display: visibility, position: 'absolute', top: 0, width: '100%', marginLeft: '-15px' } },
-        _react2.default.createElement('iframe', { src: this.props.url, style: { width: '100%', height: window.innerHeight - 50 + "px" } })
+        _react2.default.createElement('iframe', { src: this.props.url, style: { width: window.innerWidth + "px", height: window.innerHeight - 50 + "px" } })
       );
     }
   }]);
