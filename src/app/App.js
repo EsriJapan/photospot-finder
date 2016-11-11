@@ -131,11 +131,10 @@ class App extends Mediator {
     const routeInfoString = this.loadRoute();
     if (routeInfoString !== null) {
       const routeInfo = JSON.parse(routeInfoString);
-      this.getRoute(routeInfo.routes, routeInfo.destination, false);
       this.setState({
-        savedRoute: true,
-        mapPageDestinationPhoto: routeInfo.destinationPhoto
+        savedRoute: true
       });
+      this.getRoute(routeInfo.routes, routeInfo.destination, routeInfo.destinationPhoto, false);
       setTimeout(function () {
         this.setState({ savedRoute: false });
       }.bind(this), 15000);
@@ -223,8 +222,6 @@ class App extends Mediator {
 
       this.selectedPhoto = data;
 
-      this.setState({ mapPageDestinationPhoto: imgUrl });
-
       // ルートビュー数の更新
       this.updateRouteViewCount(data);
 
@@ -258,7 +255,7 @@ class App extends Mediator {
         if(error){
           console.log(error);
         } else {
-          this.getRoute(response.routes, data.properties[appConfig.photoSearch.titleField], true);
+          this.getRoute(response.routes, data.properties[appConfig.photoSearch.titleField], imgUrl, true);
         }
       }.bind(this));
 
@@ -371,7 +368,7 @@ class App extends Mediator {
         console.log(error);
       } else {
         const selectedPhoto = this.selectedPhoto;
-        this.getRoute(response.routes, selectedPhoto.properties[appConfig.photoSearch.titleField], false);
+        this.getRoute(response.routes, selectedPhoto.properties[appConfig.photoSearch.titleField], this.state.mapPageDestinationPhoto, false);
       }
     }.bind(this));
   }
@@ -390,7 +387,7 @@ class App extends Mediator {
   }
 
   // ルート検索結果の表示・保存
-  getRoute (routes, destination, first) {
+  getRoute (routes, destination, destinationPhoto, first) {
     console.log('App.getRoute: ', routes);
     const routeGeoJSON = L.esri.Util.arcgisToGeoJSON(routes.features[0]);
     const routeStyle = this.routeStyle;
@@ -423,7 +420,8 @@ class App extends Mediator {
       mapPageRouteTime: routeTime,
       mapPageRouteDistance: Math.round(routeGeoJSON.properties.Total_Kilometers * 100) / 100,
       mapPageDestination: destination,
-      mapPageTravelMode: travelMode
+      mapPageTravelMode: travelMode,
+      mapPageDestinationPhoto: destinationPhoto
     };
 
     // ルートバッファー
@@ -454,15 +452,15 @@ class App extends Mediator {
     this.routeLayer.addData(routeGeoJSON);
 
     // ルートの保存（LocalStorage）
-    this.saveRoute(routes, destination);
+    this.saveRoute(routes, destination, destinationPhoto);
   }
 
   // ルートの保存（LocalStorage）
-  saveRoute (routes, destination) {
+  saveRoute (routes, destination, destinationPhoto) {
     const routeInfo = {
       routes: routes,
       destination: destination,
-      destinationPhoto: this.state.mapPageDestinationPhoto
+      destinationPhoto: destinationPhoto
     };
     const routeInfoString = JSON.stringify(routeInfo); // ルートと目的地のオブジェクトを文字列に変換
     localStorage.setItem('photospot-finder-route', routeInfoString);
