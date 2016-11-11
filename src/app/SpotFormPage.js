@@ -15,7 +15,7 @@ class SpotFormPage extends React.Component {
 
     return (
       <div className="spotformpage" style={{ display: visibility, position: 'absolute', top: 0, width: '100%', marginLeft: '-15px' }}>
-        <iframe src={this.props.url} style={{ width: '100%', height: window.innerHeight - 50 + "px" }} />
+        <iframe src={this.props.url} style={{ width: window.innerWidth + "px", height: window.innerHeight - 50 + "px" }} />
       </div>
     );
   }
