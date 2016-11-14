@@ -4,6 +4,7 @@ import React from 'react';
 import { Navbar, Nav, NavItem, NavDropdown, MenuItem, Grid, Row, Col, Glyphicon } from 'react-bootstrap';
 
 import LoadPage from './LoadPage';
+import SelectSpotTypePage from './SelectSpotTypePage';
 import MapPage from './MapPage';
 import PhotoPage from './PhotoPage';
 import SpotFormPage from './SpotFormPage';
@@ -23,6 +24,9 @@ class App extends Mediator {
 
       // 読み込み画面の状態
       this.state.loadPageVisibility = true;
+
+      // スポットタイプ選択画面の状態
+      this.state.selectSpotTypePageVisibility = false;
 
       // 写真・くじらんページの状態
       this.state.photoPageVisibility = false;
@@ -111,6 +115,7 @@ class App extends Mediator {
       this.onChangeSwitch = this.onChangeSwitch.bind(this);
       this.getRoute = this.getRoute.bind(this);
       this.countKujiran = this.countKujiran.bind(this);
+      this.showSelectSpotTypePage = this.showSelectSpotTypePage.bind(this);
       this.showMapPage = this.showMapPage.bind(this);
       this.showPhotoPage = this.showPhotoPage.bind(this);
       this.showPhotoPage2 = this.showPhotoPage2.bind(this);
@@ -295,9 +300,9 @@ class App extends Mediator {
     // 読み込み画面を非表示
     this.hideLoadPage();
     // 初期読み込みの場合に写真ページへ表示切替
-    if (initialLoad === true) {
+    /*if (initialLoad === true) {
       this.showPhotoPage();
-    }
+    }*/
   }
 
   // トラベルモードスイッチの切り替え時に実行
@@ -504,6 +509,7 @@ class App extends Mediator {
   // 地図ページへの表示切替
   showMapPage () {
     this.setState({
+      selectSpotTypePageVisibility: false,
       photoPageVisibility: false,
       photoPage2Visibility: false,
       mapPageVisibility: true,
@@ -518,6 +524,7 @@ class App extends Mediator {
   // 写真ページへの表示切替
   showPhotoPage () {
     this.setState({
+      selectSpotTypePageVisibility: false,
       photoPageVisibility: true,
       photoPage2Visibility: false,
       mapPageVisibility: false,
@@ -529,6 +536,7 @@ class App extends Mediator {
   // 写真ページ2への表示切替
   showPhotoPage2 () {
     this.setState({
+      selectSpotTypePageVisibility: false,
       photoPageVisibility: false,
       photoPage2Visibility: true,
       mapPageVisibility: false,
@@ -540,6 +548,7 @@ class App extends Mediator {
   // 写真スポット投稿ページへの表示切替
   showSpotFormPage () {
     this.setState({
+      selectSpotTypePageVisibility: false,
       photoPageVisibility: false,
       photoPage2Visibility: false,
       mapPageVisibility: false,
@@ -551,6 +560,7 @@ class App extends Mediator {
   // くじらんスポット投稿ページへの表示切替
   showKujiranFormPage () {
     this.setState({
+      selectSpotTypePageVisibility: false,
       photoPageVisibility: false,
       photoPage2Visibility: false,
       mapPageVisibility: false,
@@ -559,10 +569,23 @@ class App extends Mediator {
     });
   }
 
+  // スポットタイプ選択画面の表示
+  showSelectSpotTypePage () {
+    this.setState({
+      loadPageVisibility: true,
+      selectSpotTypePageVisibility: true,
+      photoPageVisibility: false,
+      photoPage2Visibility: false,
+      mapPageVisibility: false,
+      spotformPageVisibility: false
+    });
+  }
+
   // 読み込み画面の表示
   showLoadPage () {
     this.setState({
       loadPageVisibility: true,
+      selectSpotTypePageVisibility: false,
       photoPageVisibility: false,
       photoPage2Visibility: false,
       mapPageVisibility: false,
@@ -573,7 +596,8 @@ class App extends Mediator {
   // 読み込み画面の非表示
   hideLoadPage () {
     this.setState({
-      loadPageVisibility: false
+      loadPageVisibility: false,
+      selectSpotTypePageVisibility: true
     });
   }
 
@@ -672,10 +696,10 @@ class App extends Mediator {
           </Navbar.Header>
           <Navbar.Collapse>
             <Nav>
-              <NavItem eventKey={1} href="#" onClick={this.showPhotoPage}><Glyphicon glyph="picture" /> 写真</NavItem>
-              <NavItem eventKey={1} href="#" onClick={this.showPhotoPage2}><Glyphicon glyph="picture" /> くじらん写真</NavItem>
+              <NavItem eventKey={1} href="#" onClick={this.showPhotoPage}><Glyphicon glyph="picture" /> 撮影スポットの写真</NavItem>
+              <NavItem eventKey={1} href="#" onClick={this.showPhotoPage2}><Glyphicon glyph="picture" /> くじらんスポットの写真</NavItem>
               <NavItem eventKey={2} href="#" onClick={this.showMapPage}><Glyphicon glyph="map-marker" /> 地図</NavItem>
-              <NavItem eventKey={3} href="#" onClick={this.showSpotFormPage}><Glyphicon glyph="send" /> 写真スポットの投稿</NavItem>
+              <NavItem eventKey={3} href="#" onClick={this.showSpotFormPage}><Glyphicon glyph="send" /> 撮影スポットの投稿</NavItem>
               <NavItem eventKey={4} href="#" onClick={this.showKujiranFormPage}><Glyphicon glyph="send" /> くじらんスポットの投稿</NavItem>
               <NavItem eventKey={5} href="https://github.com/EsriJapan/photospot-finder">GitHub (外部リンク)</NavItem>
             </Nav>
@@ -686,6 +710,11 @@ class App extends Mediator {
             <Col xs={12} md={12}>
               <LoadPage 
                 visibility={this.state.loadPageVisibility} 
+              />
+              <SelectSpotTypePage 
+                visibility={this.state.selectSpotTypePageVisibility} 
+                onSelectPhotoSpot={this.showPhotoPage} 
+                onSelectKujiranSpot={this.showPhotoPage2} 
               />
               <PhotoPage 
                 visibility={this.state.photoPageVisibility} 
