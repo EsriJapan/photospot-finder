@@ -101,6 +101,8 @@ class App extends Mediator {
       this.yorimichiSpots = [];
       // アクセストークン
       this.token = null;
+      // 最初の現在位置取得かを判別するフラグ
+      this.firstGeolocationDone = false;
 
       // this バインド地獄（アローファンクション使いたい）
       this.updateRouteViewCount = this.updateRouteViewCount.bind(this);
@@ -119,6 +121,7 @@ class App extends Mediator {
       this.onClickYorimichiYesButton = this.onClickYorimichiYesButton.bind(this);
       this.showYorimichiAlert = this.showYorimichiAlert.bind(this);
       this.hideYorimichiAlert = this.hideYorimichiAlert.bind(this);
+      this.setMapviewToLocation = this.setMapviewToLocation.bind(this);
   }
 
   // Mediator のメソッド：マップの初期化が完了
@@ -161,6 +164,12 @@ class App extends Mediator {
     }
   }
 
+  // 現在位置ボタンのクリックイベント
+  setMapviewToLocation () {
+    const map = this.state.map;
+    map.setView(this.state.userCurrentPosition);
+  }
+
   // 現在位置の設定
   getGeolocation (position) {
     console.log('App.geoGeolocation: ', position);
@@ -169,7 +178,10 @@ class App extends Mediator {
     console.log('App.geoGeolocation.userCurrentPosition: ', userCurrentPosition);
 
     // 地図を現在地へ移動
-    map.setView(userCurrentPosition);
+    if (this.firstGeolocationDone === false) {
+      map.setView(userCurrentPosition);
+      this.firstGeolocationDone = true;
+    }
 
     // 現在位置の更新のためマーカーを消去
     this.userLayer.clearLayers();
@@ -713,6 +725,7 @@ class App extends Mediator {
                 yorimichiAlertVisibility={this.state.mapPageYorimichiAlertVisibility} 
                 onClickYorimichiYesButton={this.onClickYorimichiYesButton} 
                 onClickYorimichiNoButton={this.hideYorimichiAlert} 
+                onClickLocationButton={this.setMapviewToLocation}
               />
               <SpotFormPage 
                 visibility={this.state.spotformPageVisibility} 
