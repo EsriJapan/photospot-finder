@@ -38,6 +38,14 @@ export const appConfig = {
     reportDateField: 'report_time', // 投稿日時のフィールド
     routeViewCountField: 'route_view_count' // ルートビュー数のフィールド
   },
+  photoSearch2: {
+    endpointUrl: '//services.arcgis.com/wlVTGRSYTzAbjjiC/arcgis/rest/services/photospot_kujiran/FeatureServer/0', // くじらんスポット エンドポイント URL
+    titleField: 'title', // タイトルのフィールド
+    reporterNameField: 'reporter_name', // 投稿者名のフィールド
+    commentField: 'comment_text', // コメントのフィールド
+    reportDateField: 'report_time', // 投稿日時のフィールド
+    routeViewCountField: 'route_view_count' // ルートビュー数のフィールド
+  },
   kujiran: {
     endpointUrl: '//services.arcgis.com/wlVTGRSYTzAbjjiC/arcgis/rest/services/photospot_kujiran/FeatureServer/0' // くじらんスポット エンドポイント URL
   },
