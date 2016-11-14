@@ -24,10 +24,12 @@ class App extends Mediator {
       // 読み込み画面の状態
       this.state.loadPageVisibility = true;
 
-      // 写真ページの状態
+      // 写真・くじらんページの状態
       this.state.photoPageVisibility = false;
       this.state.photoPageSearchRadius = appConfig.photoSearch.radius.walk;
       this.state.photoPageSearchEndpointUrl = appConfig.photoSearch.endpointUrl;
+      this.state.photoPage2Visibility = false;
+      this.state.photoPage2SearchEndpointUrl = appConfig.photoSearch2.endpointUrl;
       this.state.travelMode = 0; // 0: walk, 1: car
       this.state.savedRoute = false;
 
@@ -109,6 +111,7 @@ class App extends Mediator {
       this.countKujiran = this.countKujiran.bind(this);
       this.showMapPage = this.showMapPage.bind(this);
       this.showPhotoPage = this.showPhotoPage.bind(this);
+      this.showPhotoPage2 = this.showPhotoPage2.bind(this);
       this.showSpotFormPage = this.showSpotFormPage.bind(this);
       this.showKujiranFormPage = this.showKujiranFormPage.bind(this);
       this.hideLoadPage = this.hideLoadPage.bind(this);
@@ -140,8 +143,14 @@ class App extends Mediator {
       }.bind(this), 15000);
     }
 
-    // デモ用プログラム：ダミーの現在位置
-    if (appConfig.map.geolocation === false) {
+    if (appConfig.map.geolocation === true) {
+      let location = [];
+      if (navigator.geolocation) {
+        navigator.geolocation.watchPosition(this.getGeolocation.bind(this), this.errorGeolocation.bind(this));
+      } else {
+        alert('現在地を取得できません');
+      }
+    } else {
       const dammyPosition = {
         coords: {
           latitude: this.state.userCurrentPosition[0],
@@ -155,7 +164,12 @@ class App extends Mediator {
   // 現在位置の設定
   getGeolocation (position) {
     console.log('App.geoGeolocation: ', position);
+    const map = this.state.map;
     const userCurrentPosition = [position.coords.latitude, position.coords.longitude];
+    console.log('App.geoGeolocation.userCurrentPosition: ', userCurrentPosition);
+
+    // 地図を現在地へ移動
+    map.setView(userCurrentPosition);
 
     // 現在位置の更新のためマーカーを消去
     this.userLayer.clearLayers();
@@ -479,6 +493,7 @@ class App extends Mediator {
   showMapPage () {
     this.setState({
       photoPageVisibility: false,
+      photoPage2Visibility: false,
       mapPageVisibility: true,
       spotformPageVisibility: false,
       kujiranformPageVisibility: false
@@ -492,6 +507,18 @@ class App extends Mediator {
   showPhotoPage () {
     this.setState({
       photoPageVisibility: true,
+      photoPage2Visibility: false,
+      mapPageVisibility: false,
+      spotformPageVisibility: false,
+      kujiranformPageVisibility: false
+    });
+  }
+
+  // 写真ページ2への表示切替
+  showPhotoPage2 () {
+    this.setState({
+      photoPageVisibility: false,
+      photoPage2Visibility: true,
       mapPageVisibility: false,
       spotformPageVisibility: false,
       kujiranformPageVisibility: false
@@ -502,6 +529,7 @@ class App extends Mediator {
   showSpotFormPage () {
     this.setState({
       photoPageVisibility: false,
+      photoPage2Visibility: false,
       mapPageVisibility: false,
       spotformPageVisibility: true,
       kujiranformPageVisibility: false
@@ -512,6 +540,7 @@ class App extends Mediator {
   showKujiranFormPage () {
     this.setState({
       photoPageVisibility: false,
+      photoPage2Visibility: false,
       mapPageVisibility: false,
       spotformPageVisibility: false,
       kujiranformPageVisibility: true
@@ -523,6 +552,7 @@ class App extends Mediator {
     this.setState({
       loadPageVisibility: true,
       photoPageVisibility: false,
+      photoPage2Visibility: false,
       mapPageVisibility: false,
       spotformPageVisibility: false
     });
@@ -536,14 +566,14 @@ class App extends Mediator {
   }
 
   componentWillMount () {
-    if (appConfig.map.geolocation === true) {
+    /*if (appConfig.map.geolocation === true) {
       let location = [];
       if (navigator.geolocation) {
         navigator.geolocation.watchPosition(this.getGeolocation.bind(this), this.errorGeolocation.bind(this));
       } else {
         alert('現在地を取得できません');
       }
-    }
+    }*/
   }
 
   componentDidUpdate (prevProps, prevState) {
@@ -631,6 +661,7 @@ class App extends Mediator {
           <Navbar.Collapse>
             <Nav>
               <NavItem eventKey={1} href="#" onClick={this.showPhotoPage}><Glyphicon glyph="picture" /> 写真</NavItem>
+              <NavItem eventKey={1} href="#" onClick={this.showPhotoPage2}><Glyphicon glyph="picture" /> くじらん写真</NavItem>
               <NavItem eventKey={2} href="#" onClick={this.showMapPage}><Glyphicon glyph="map-marker" /> 地図</NavItem>
               <NavItem eventKey={3} href="#" onClick={this.showSpotFormPage}><Glyphicon glyph="send" /> 写真スポットの投稿</NavItem>
               <NavItem eventKey={4} href="#" onClick={this.showKujiranFormPage}><Glyphicon glyph="send" /> くじらんスポットの投稿</NavItem>
@@ -654,6 +685,19 @@ class App extends Mediator {
                 onChangeSwitch={this.onChangeSwitch} 
                 hasSavedRoute={this.state.savedRoute} 
                 onClickSavedRouteShowButton={this.showMapPage} 
+                photoSearchConfig={appConfig.photoSearch} 
+              />
+              <PhotoPage 
+                visibility={this.state.photoPage2Visibility} 
+                searchRadius={this.state.photoPageSearchRadius} 
+                location={this.state.userCurrentPosition} 
+                searchEndpointUrl={this.state.photoPage2SearchEndpointUrl} 
+                onSelectPhoto={this.onSelectPhoto} 
+                onLoadPhotos={this.onLoadPhotos} 
+                onChangeSwitch={this.onChangeSwitch} 
+                hasSavedRoute={this.state.savedRoute} 
+                onClickSavedRouteShowButton={this.showMapPage}  
+                photoSearchConfig={appConfig.photoSearch2} 
               />
               <MapPage 
                 visibility={this.state.mapPageVisibility} 

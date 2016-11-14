@@ -90,12 +90,12 @@ class PhotoPage extends React.Component {
         return (
           <PhotoLayout 
             imgUrl={p.url} 
-            name={p.properties[appConfig.photoSearch.reporterNameField]}
-            title={p.properties[appConfig.photoSearch.titleField]} 
-            comment={p.properties[appConfig.photoSearch.commentField]} 
-            time={p.properties[appConfig.photoSearch.reportDateField]} 
+            name={p.properties[this.props.photoSearchConfig.reporterNameField]}
+            title={p.properties[this.props.photoSearchConfig.titleField]} 
+            comment={p.properties[this.props.photoSearchConfig.commentField]} 
+            time={p.properties[this.props.photoSearchConfig.reportDateField]} 
             data={p} 
-            routeViewCount={p.properties[appConfig.photoSearch.routeViewCountField]}
+            routeViewCount={p.properties[this.props.photoSearchConfig.routeViewCountField]}
             onSelectPhoto={this.props.onSelectPhoto}
             key={"murophoto_" + i} 
           />
@@ -199,7 +199,8 @@ PhotoPage.propTypes = {
   onLoadPhotos: React.PropTypes.func,
   onChangeSwitch: React.PropTypes.func,
   hasSavedRoute: React.PropTypes.bool,
-  onClickSavedRouteShowButton: React.PropTypes.func
+  onClickSavedRouteShowButton: React.PropTypes.func,
+  photoSearchConfig: React.PropTypes.object
 };
 
 PhotoPage.displayName = 'PhotoPage';
