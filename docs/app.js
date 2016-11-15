@@ -1349,9 +1349,23 @@ var PhotoPage = function (_React$Component) {
       query.run(this.getPhotos.bind(this));
     }
   }, {
+    key: 'getAttachment',
+    value: function getAttachment(url, i, photo) {
+      return new Promise(function (resolve, reject) {
+        L.esri.request(url, {}, function (error, response) {
+          if (error) {
+            //console.log(error);
+          } else {
+            photo.url = url + '/' + response.attachmentInfos[0].id;
+            resolve(photo);
+          }
+        }.bind(this));
+      });
+    }
+  }, {
     key: 'getPhotos',
     value: function getPhotos(error, featureCollection, response) {
-      console.log('PhotoPage.getPhotos: ', featureCollection, response);
+      console.log('PhotoPage.getPhotos: ', featureCollection);
       var photos = [];
       var getAttachments = [];
 
@@ -1362,21 +1376,12 @@ var PhotoPage = function (_React$Component) {
 
         photos.forEach(function (p, i) {
           var attachmentReqUrl = this.props.searchEndpointUrl + '/' + p.properties.OBJECTID + '/attachments';
-          var getAttachment = L.esri.request(attachmentReqUrl, {}, function (error, response) {
-            if (error) {
-              //console.log(error);
-            } else {
-              //console.log(response);
-              photos[i].url = attachmentReqUrl + '/' + response.attachmentInfos[0].id;
-              //this.setState({ photos: photos });
-            }
-          }.bind(this));
-          getAttachments.push(getAttachment);
+          getAttachments.push(this.getAttachment(attachmentReqUrl, i, p));
         }.bind(this));
 
-        Promise.all(getAttachments).then(function () {
-          console.log('PhotoPage.getAttachments: done!');
-          this.setState({ photos: photos });
+        Promise.all(getAttachments).then(function (results) {
+          console.log('PhotoPage.getAttachments: done!', results);
+          this.setState({ photos: results });
           setTimeout(function () {
             this.props.onLoadPhotos(this.initialLoad);
             this.initialLoad = false;
@@ -1414,6 +1419,7 @@ var PhotoPage = function (_React$Component) {
       var Photos = null;
       if (this.state.photos.length > 0) {
         Photos = this.state.photos.map(function (p, i) {
+          console.log('create img: ', p.url);
           return _react2.default.createElement(_PhotoLayout2.default, {
             imgUrl: p.url,
             name: p.properties[this.props.photoSearchConfig.reporterNameField],
