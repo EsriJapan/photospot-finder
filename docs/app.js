@@ -152,6 +152,7 @@ var App = function (_Mediator) {
     _this.updateRouteViewCount = _this.updateRouteViewCount.bind(_this);
     _this.onSelectPhoto = _this.onSelectPhoto.bind(_this);
     _this.onLoadPhotos = _this.onLoadPhotos.bind(_this);
+    _this.onLoadPhotos2 = _this.onLoadPhotos2.bind(_this);
     _this.onChangeSwitch = _this.onChangeSwitch.bind(_this);
     _this.getRoute = _this.getRoute.bind(_this);
     _this.countKujiran = _this.countKujiran.bind(_this);
@@ -362,13 +363,14 @@ var App = function (_Mediator) {
   }, {
     key: 'onLoadPhotos',
     value: function onLoadPhotos(initialLoad) {
-      // 読み込み画面を非表示
-      this.hideLoadPage();
-      // 初期読み込みの場合に写真ページへ表示切替
-      /*if (initialLoad === true) {
-        this.showPhotoPage();
-      }*/
+      if (initialLoad === true) {
+        // 読み込み画面を非表示
+        this.hideLoadPage();
+      }
     }
+  }, {
+    key: 'onLoadPhotos2',
+    value: function onLoadPhotos2(initialLoad) {}
 
     // トラベルモードスイッチの切り替え時に実行
 
@@ -853,7 +855,7 @@ var App = function (_Mediator) {
                 location: this.state.userCurrentPosition,
                 searchEndpointUrl: this.state.photoPage2SearchEndpointUrl,
                 onSelectPhoto: this.onSelectPhoto,
-                onLoadPhotos: this.onLoadPhotos,
+                onLoadPhotos: this.onLoadPhotos2,
                 onChangeSwitch: this.onChangeSwitch,
                 hasSavedRoute: this.state.savedRoute,
                 onClickSavedRouteShowButton: this.showMapPage,
