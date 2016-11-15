@@ -112,6 +112,7 @@ class App extends Mediator {
       this.updateRouteViewCount = this.updateRouteViewCount.bind(this);
       this.onSelectPhoto = this.onSelectPhoto.bind(this);
       this.onLoadPhotos = this.onLoadPhotos.bind(this);
+      this.onLoadPhotos2 = this.onLoadPhotos2.bind(this);
       this.onChangeSwitch = this.onChangeSwitch.bind(this);
       this.getRoute = this.getRoute.bind(this);
       this.countKujiran = this.countKujiran.bind(this);
@@ -297,12 +298,14 @@ class App extends Mediator {
 
   // 写真ページのすべての写真が読み込まれた時点で実行
   onLoadPhotos (initialLoad) {
-    // 読み込み画面を非表示
-    this.hideLoadPage();
-    // 初期読み込みの場合に写真ページへ表示切替
-    /*if (initialLoad === true) {
-      this.showPhotoPage();
-    }*/
+    if (initialLoad === true) {
+      // 読み込み画面を非表示
+      this.hideLoadPage();
+    }
+  }
+
+  onLoadPhotos2 (initialLoad) {
+    
   }
 
   // トラベルモードスイッチの切り替え時に実行
@@ -734,7 +737,7 @@ class App extends Mediator {
                 location={this.state.userCurrentPosition} 
                 searchEndpointUrl={this.state.photoPage2SearchEndpointUrl} 
                 onSelectPhoto={this.onSelectPhoto} 
-                onLoadPhotos={this.onLoadPhotos} 
+                onLoadPhotos={this.onLoadPhotos2} 
                 onChangeSwitch={this.onChangeSwitch} 
                 hasSavedRoute={this.state.savedRoute} 
                 onClickSavedRouteShowButton={this.showMapPage}  
