@@ -9,6 +9,11 @@ class SearchInfo extends React.Component {
   }
 
   render () {
+    let switchState = true;
+    if (this.props.travelMode === 1) {
+      switchState = false;
+    }
+
     return (
       <div className="search-info">
         <style type="text/css">{`
@@ -31,7 +36,7 @@ class SearchInfo extends React.Component {
         }
         `}</style>
         <Switch
-          defaultValue={true} 
+          value={switchState} 
           bsSize={"small"} 
           onChange={this.props.onChangeSwitch}
           onText={"徒歩"}
@@ -44,6 +49,7 @@ class SearchInfo extends React.Component {
 }
 
 SearchInfo.propTypes = {
+  travelMode: React.PropTypes.number,
   onChangeSwitch: React.PropTypes.func
 };
 

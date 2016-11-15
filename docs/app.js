@@ -847,7 +847,8 @@ var App = function (_Mediator) {
                 onChangeSwitch: this.onChangeSwitch,
                 hasSavedRoute: this.state.savedRoute,
                 onClickSavedRouteShowButton: this.showMapPage,
-                photoSearchConfig: _config2.default.photoSearch
+                photoSearchConfig: _config2.default.photoSearch,
+                travelMode: this.state.travelMode
               }),
               _react2.default.createElement(_PhotoPage2.default, {
                 visibility: this.state.photoPage2Visibility,
@@ -859,7 +860,8 @@ var App = function (_Mediator) {
                 onChangeSwitch: this.onChangeSwitch,
                 hasSavedRoute: this.state.savedRoute,
                 onClickSavedRouteShowButton: this.showMapPage,
-                photoSearchConfig: _config2.default.photoSearch2
+                photoSearchConfig: _config2.default.photoSearch2,
+                travelMode: this.state.travelMode
               }),
               _react2.default.createElement(_MapPage2.default, {
                 visibility: this.state.mapPageVisibility,
@@ -1349,9 +1351,23 @@ var PhotoPage = function (_React$Component) {
       query.run(this.getPhotos.bind(this));
     }
   }, {
+    key: 'getAttachment',
+    value: function getAttachment(url, i, photo) {
+      return new Promise(function (resolve, reject) {
+        L.esri.request(url, {}, function (error, response) {
+          if (error) {
+            //console.log(error);
+          } else {
+            photo.url = url + '/' + response.attachmentInfos[0].id;
+            resolve(photo);
+          }
+        }.bind(this));
+      });
+    }
+  }, {
     key: 'getPhotos',
     value: function getPhotos(error, featureCollection, response) {
-      console.log('PhotoPage.getPhotos: ', featureCollection, response);
+      console.log('PhotoPage.getPhotos: ', featureCollection);
       var photos = [];
       var getAttachments = [];
 
@@ -1362,21 +1378,12 @@ var PhotoPage = function (_React$Component) {
 
         photos.forEach(function (p, i) {
           var attachmentReqUrl = this.props.searchEndpointUrl + '/' + p.properties.OBJECTID + '/attachments';
-          var getAttachment = L.esri.request(attachmentReqUrl, {}, function (error, response) {
-            if (error) {
-              //console.log(error);
-            } else {
-              //console.log(response);
-              photos[i].url = attachmentReqUrl + '/' + response.attachmentInfos[0].id;
-              //this.setState({ photos: photos });
-            }
-          }.bind(this));
-          getAttachments.push(getAttachment);
+          getAttachments.push(this.getAttachment(attachmentReqUrl, i, p));
         }.bind(this));
 
-        Promise.all(getAttachments).then(function () {
-          console.log('PhotoPage.getAttachments: done!');
-          this.setState({ photos: photos });
+        Promise.all(getAttachments).then(function (results) {
+          console.log('PhotoPage.getAttachments: done!', results);
+          this.setState({ photos: results });
           setTimeout(function () {
             this.props.onLoadPhotos(this.initialLoad);
             this.initialLoad = false;
@@ -1414,6 +1421,7 @@ var PhotoPage = function (_React$Component) {
       var Photos = null;
       if (this.state.photos.length > 0) {
         Photos = this.state.photos.map(function (p, i) {
+          console.log('create img: ', p.url);
           return _react2.default.createElement(_PhotoLayout2.default, {
             imgUrl: p.url,
             name: p.properties[this.props.photoSearchConfig.reporterNameField],
@@ -1438,7 +1446,7 @@ var PhotoPage = function (_React$Component) {
         ),
         Alert,
         Photos,
-        _react2.default.createElement(_SearchInfo2.default, { onChangeSwitch: this.props.onChangeSwitch })
+        _react2.default.createElement(_SearchInfo2.default, { travelMode: this.props.travelMode, onChangeSwitch: this.props.onChangeSwitch })
       );
     }
   }]);
@@ -1456,7 +1464,8 @@ PhotoPage.propTypes = {
   onChangeSwitch: _react2.default.PropTypes.func,
   hasSavedRoute: _react2.default.PropTypes.bool,
   onClickSavedRouteShowButton: _react2.default.PropTypes.func,
-  photoSearchConfig: _react2.default.PropTypes.object
+  photoSearchConfig: _react2.default.PropTypes.object,
+  travelMode: _react2.default.PropTypes.number
 };
 
 PhotoPage.displayName = 'PhotoPage';
@@ -1679,6 +1688,11 @@ var SearchInfo = function (_React$Component) {
   _createClass(SearchInfo, [{
     key: 'render',
     value: function render() {
+      var switchState = true;
+      if (this.props.travelMode === 1) {
+        switchState = false;
+      }
+
       return _react2.default.createElement(
         'div',
         { className: 'search-info' },
@@ -1688,7 +1702,7 @@ var SearchInfo = function (_React$Component) {
           '\n        .search-info {\n          bottom: 0;\n          width: 100%;\n          height: 55px;\n          position: fixed;\n          z-index: 999;\n          padding: 10px;\n        }\n        .search-info > p {\n          font-size: 0.8em;\n        }\n        .bootstrap-switch .bootstrap-switch-label {\n          background: none;\n        }\n        .bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-warning, .bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-warning {\n          background: rgb(255,100,0);\n        }\n        '
         ),
         _react2.default.createElement(_reactBootstrapSwitch2.default, {
-          defaultValue: true,
+          value: switchState,
           bsSize: "small",
           onChange: this.props.onChangeSwitch,
           onText: "徒歩",
@@ -1703,6 +1717,7 @@ var SearchInfo = function (_React$Component) {
 }(_react2.default.Component);
 
 SearchInfo.propTypes = {
+  travelMode: _react2.default.PropTypes.number,
   onChangeSwitch: _react2.default.PropTypes.func
 };
 

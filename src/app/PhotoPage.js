@@ -25,8 +25,21 @@ class PhotoPage extends React.Component {
     query.run(this.getPhotos.bind(this));
   }
 
+  getAttachment (url, i, photo) {
+    return new Promise(function (resolve, reject) {
+      L.esri.request(url, {}, function(error, response) {
+        if (error) {
+          //console.log(error);
+        } else {
+          photo.url = url + '/' + response.attachmentInfos[0].id;
+          resolve(photo);
+        }
+      }.bind(this));
+    });
+  }
+
   getPhotos (error, featureCollection, response) {
-    console.log('PhotoPage.getPhotos: ', featureCollection, response);
+    console.log('PhotoPage.getPhotos: ', featureCollection);
     let photos = [];
     let getAttachments = [];
 
@@ -37,21 +50,12 @@ class PhotoPage extends React.Component {
 
       photos.forEach(function (p, i) {
         const attachmentReqUrl = this.props.searchEndpointUrl + '/' + p.properties.OBJECTID + '/attachments';
-        const getAttachment = L.esri.request(attachmentReqUrl, {}, function(error, response) {
-          if(error){
-            //console.log(error);
-          } else {
-            //console.log(response);
-            photos[i].url = attachmentReqUrl + '/' + response.attachmentInfos[0].id;
-            //this.setState({ photos: photos });
-          }
-        }.bind(this));
-        getAttachments.push(getAttachment);
+        getAttachments.push(this.getAttachment(attachmentReqUrl, i, p));
       }.bind(this));
 
-      Promise.all(getAttachments).then(function () {
-        console.log('PhotoPage.getAttachments: done!');
-        this.setState({ photos: photos });
+      Promise.all(getAttachments).then(function (results) {
+        console.log('PhotoPage.getAttachments: done!', results);
+        this.setState({ photos: results });
         setTimeout(function () {
           this.props.onLoadPhotos(this.initialLoad);
           this.initialLoad = false;
@@ -60,7 +64,6 @@ class PhotoPage extends React.Component {
     } else {
       this.setState({ photos: photos });
     }
-    
   }
 
   componentWillMount () {
@@ -87,6 +90,7 @@ class PhotoPage extends React.Component {
     let Photos = null;
     if (this.state.photos.length > 0) {
       Photos = this.state.photos.map(function (p, i) {
+        console.log('create img: ', p.url);
         return (
           <PhotoLayout 
             imgUrl={p.url} 
@@ -184,7 +188,7 @@ class PhotoPage extends React.Component {
         `}</style>
         {Alert}
         {Photos}
-        <SearchInfo onChangeSwitch={this.props.onChangeSwitch} />
+        <SearchInfo travelMode={this.props.travelMode} onChangeSwitch={this.props.onChangeSwitch} />
       </div>
     );
   }
@@ -200,7 +204,8 @@ PhotoPage.propTypes = {
   onChangeSwitch: React.PropTypes.func,
   hasSavedRoute: React.PropTypes.bool,
   onClickSavedRouteShowButton: React.PropTypes.func,
-  photoSearchConfig: React.PropTypes.object
+  photoSearchConfig: React.PropTypes.object,
+  travelMode: React.PropTypes.number
 };
 
 PhotoPage.displayName = 'PhotoPage';
