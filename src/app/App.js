@@ -572,7 +572,7 @@ class App extends Mediator {
   // スポットタイプ選択画面の表示
   showSelectSpotTypePage () {
     this.setState({
-      loadPageVisibility: true,
+      loadPageVisibility: false,
       selectSpotTypePageVisibility: true,
       photoPageVisibility: false,
       photoPage2Visibility: false,
@@ -697,11 +697,11 @@ class App extends Mediator {
           <Navbar.Collapse>
             <Nav>
               <NavItem eventKey={1} href="#" onClick={this.showPhotoPage}><Glyphicon glyph="picture" /> 撮影スポットの写真</NavItem>
-              <NavItem eventKey={1} href="#" onClick={this.showPhotoPage2}><Glyphicon glyph="picture" /> くじらんスポットの写真</NavItem>
-              <NavItem eventKey={2} href="#" onClick={this.showMapPage}><Glyphicon glyph="map-marker" /> 地図</NavItem>
-              <NavItem eventKey={3} href="#" onClick={this.showSpotFormPage}><Glyphicon glyph="send" /> 撮影スポットの投稿</NavItem>
-              <NavItem eventKey={4} href="#" onClick={this.showKujiranFormPage}><Glyphicon glyph="send" /> くじらんスポットの投稿</NavItem>
-              <NavItem eventKey={5} href="https://github.com/EsriJapan/photospot-finder">GitHub (外部リンク)</NavItem>
+              <NavItem eventKey={2} href="#" onClick={this.showPhotoPage2}><Glyphicon glyph="picture" /> くじらんスポットの写真</NavItem>
+              <NavItem eventKey={3} href="#" onClick={this.showMapPage}><Glyphicon glyph="map-marker" /> 地図</NavItem>
+              <NavItem eventKey={4} href="#" onClick={this.showSpotFormPage}><Glyphicon glyph="send" /> 撮影スポットの投稿</NavItem>
+              <NavItem eventKey={5} href="#" onClick={this.showKujiranFormPage}><Glyphicon glyph="send" /> くじらんスポットの投稿</NavItem>
+              <NavItem eventKey={6} href="https://github.com/EsriJapan/photospot-finder">GitHub (外部リンク)</NavItem>
             </Nav>
           </Navbar.Collapse>
         </Navbar>

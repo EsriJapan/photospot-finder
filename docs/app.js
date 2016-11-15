@@ -684,7 +684,7 @@ var App = function (_Mediator) {
     key: 'showSelectSpotTypePage',
     value: function showSelectSpotTypePage() {
       this.setState({
-        loadPageVisibility: true,
+        loadPageVisibility: false,
         selectSpotTypePageVisibility: true,
         photoPageVisibility: false,
         photoPage2Visibility: false,
@@ -788,31 +788,31 @@ var App = function (_Mediator) {
               ),
               _react2.default.createElement(
                 _reactBootstrap.NavItem,
-                { eventKey: 1, href: '#', onClick: this.showPhotoPage2 },
+                { eventKey: 2, href: '#', onClick: this.showPhotoPage2 },
                 _react2.default.createElement(_reactBootstrap.Glyphicon, { glyph: 'picture' }),
                 ' \u304F\u3058\u3089\u3093\u30B9\u30DD\u30C3\u30C8\u306E\u5199\u771F'
               ),
               _react2.default.createElement(
                 _reactBootstrap.NavItem,
-                { eventKey: 2, href: '#', onClick: this.showMapPage },
+                { eventKey: 3, href: '#', onClick: this.showMapPage },
                 _react2.default.createElement(_reactBootstrap.Glyphicon, { glyph: 'map-marker' }),
                 ' \u5730\u56F3'
               ),
               _react2.default.createElement(
                 _reactBootstrap.NavItem,
-                { eventKey: 3, href: '#', onClick: this.showSpotFormPage },
+                { eventKey: 4, href: '#', onClick: this.showSpotFormPage },
                 _react2.default.createElement(_reactBootstrap.Glyphicon, { glyph: 'send' }),
                 ' \u64AE\u5F71\u30B9\u30DD\u30C3\u30C8\u306E\u6295\u7A3F'
               ),
               _react2.default.createElement(
                 _reactBootstrap.NavItem,
-                { eventKey: 4, href: '#', onClick: this.showKujiranFormPage },
+                { eventKey: 5, href: '#', onClick: this.showKujiranFormPage },
                 _react2.default.createElement(_reactBootstrap.Glyphicon, { glyph: 'send' }),
                 ' \u304F\u3058\u3089\u3093\u30B9\u30DD\u30C3\u30C8\u306E\u6295\u7A3F'
               ),
               _react2.default.createElement(
                 _reactBootstrap.NavItem,
-                { eventKey: 5, href: 'https://github.com/EsriJapan/photospot-finder' },
+                { eventKey: 6, href: 'https://github.com/EsriJapan/photospot-finder' },
                 'GitHub (\u5916\u90E8\u30EA\u30F3\u30AF)'
               )
             )
@@ -1871,7 +1871,7 @@ console.log('appConfig geolocation: ', demo);
 
 var appConfig = exports.appConfig = {
   oauth: {
-    appLogin: false, // for Esri World Route Service
+    appLogin: true, // for Esri World Route Service
     appid: 'kJb12p62K5gGwjNx' // ArcGIS for Developers で発行したアプリID: https://developers.arcgis.com/applications/
   },
   ui: {
@@ -1923,8 +1923,8 @@ var appConfig = exports.appConfig = {
       className: 'route-path'
     },
     bufferRadius: 250, // ルート バッファー半径 (寄り道スポット、くじらんの検索に使用)
-    endpointUrl: '//route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World' // ルート検索サービス エンドポイント URL
-    //endpointUrl: '//utility.arcgis.com/usrsvcs/appservices/GfNovy4yk5xdJ9b4/rest/services/World/Route/NAServer/Route_World'
+    //endpointUrl: '//route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World' // ルート検索サービス エンドポイント URL
+    endpointUrl: '//utility.arcgis.com/usrsvcs/appservices/GfNovy4yk5xdJ9b4/rest/services/World/Route/NAServer/Route_World'
   },
   spotformApp: {
     url: '//www.arcgis.com/apps/GeoForm/index.html?appid=9dd92be784fe4f3f8d5a70624781e3d1' // 写真スポット投稿フォーム アプリ URL
