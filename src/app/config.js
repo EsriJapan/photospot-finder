@@ -15,8 +15,8 @@ export const appConfig = {
     appid: 'kJb12p62K5gGwjNx' // ArcGIS for Developers で発行したアプリID: https://developers.arcgis.com/applications/
   },
   ui: {
-    title: 'PhotoSpot', // ヘッダーのタイトル (太字)
-    subtitle: 'Finder', // ヘッダーのサブタイトル
+    title: 'MURO', // ヘッダーのタイトル (太字)
+    subtitle: 'SARU', // ヘッダーのサブタイトル
     iconUrl: 'img/icon.png' // ヘッダーのアプリアイコン
   },
   map: {
