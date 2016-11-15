@@ -8,7 +8,7 @@ MUROSARU (ムロサル) とは、北海道の方言にある「書かさる」�
 
 ![](img/app-screen.png)
 
-## Features
+## 機能一覧
 
 アプリの機能仕様一覧です。
 
@@ -21,12 +21,14 @@ MUROSARU (ムロサル) とは、北海道の方言にある「書かさる」�
 - 撮影スポット、くじらんスポットの投稿フォームから写真の投稿が行えます。
 - レスポンシブな Web アプリなので各種端末のブラウザーで閲覧可能ですが、デザインはモバイルに最適化しています。
 
-[デモ](https://esrijapan.github.io/photospot-finder/?demo) の参照には [ArcGIS for Developers](https://developers.arcgis.com/) の[アカウント (無償)](http://esrijapan.github.io/arcgis-dev-resources/get-dev-account/) が必要です。ルート案内は最大で 1,250 回/月まで可能です。毎回、寄り道ルートを含めることを想定した場合は最大で 92 回/月になるのでご注意ください。
+[MUROSARU デモ](https://esrijapan.github.io/photospot-finder/?demo) では、ルート検索の利用に [ArcGIS for Developers](https://developers.arcgis.com/) の[アカウント (無償)](http://esrijapan.github.io/arcgis-dev-resources/get-dev-account/) が必要です。ルート案内は最大で 1,250 回/月まで可能です。観光スポットの寄り道ルートを毎回含めることを想定した場合は最大で 92 回/月になるのでご注意ください。
 
-デモアプリは現在位置を室蘭市某所に固定しています。実際の現在位置でアプリを利用したい場合は以下のリンク
+デモアプリは現在位置を室蘭市某所に固定しています。実際の現在位置でアプリを利用したい場合は以下のリンクよりアクセスください。
+
+- [MUROSARU](https://esrijapan.github.io/photospot-finder/)
 
 
-## Usage
+## インストール
 
 開発者向けの使用方法です。
 
@@ -50,7 +52,7 @@ MUROSARU (ムロサル) とは、北海道の方言にある「書かさる」�
 1. `docs` フォルダー内のファイルが最終的なアプリの構成ファイルになるので、ご自身の Web サーバーにホストしてください。
 
 
-## Configuration
+## アプリの設定
 
 アプリの設定方法です。
 
@@ -62,6 +64,7 @@ Photospot Finder は ArcGIS の Web サービスを参照することによっ�
 
 - ルート案内サービス ([REST エンドポイントについて](http://resources.arcgis.com/en/help/arcgis-rest-api/#/Route_service_with_synchronous_execution/02r300000036000000/))
 - 自身でホストした撮影スポット
+- 自身でホストした街の隠れ◯◯スポット
 - 自身でホストした観光スポット
 - Web マップ (ArcGIS のクラウド上で作成・管理・共有できる Web 地図)
 
@@ -76,7 +79,7 @@ Photospot Finder は ArcGIS の Web サービスを参照することによっ�
 - [Web マップの作成について](http://esrijapan.github.io/arcgis-dev-resources/create-webmap/)
 
 
-## License
+## ライセンス
 
 Copyright 2016 Esri Japan Corporation.
 
