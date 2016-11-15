@@ -19,7 +19,7 @@ class SelectSpotTypePage extends React.Component {
           .select-photospot-page > div {
             height: 50%;
             position: relative;
-            background-size: contain;
+            background-size: cover;
           }
           .select-photospot {
             background-image: url(img/photospot-bg.jpg);
