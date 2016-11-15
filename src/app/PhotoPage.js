@@ -188,7 +188,7 @@ class PhotoPage extends React.Component {
         `}</style>
         {Alert}
         {Photos}
-        <SearchInfo onChangeSwitch={this.props.onChangeSwitch} />
+        <SearchInfo travelMode={this.props.travelMode} onChangeSwitch={this.props.onChangeSwitch} />
       </div>
     );
   }
@@ -204,7 +204,8 @@ PhotoPage.propTypes = {
   onChangeSwitch: React.PropTypes.func,
   hasSavedRoute: React.PropTypes.bool,
   onClickSavedRouteShowButton: React.PropTypes.func,
-  photoSearchConfig: React.PropTypes.object
+  photoSearchConfig: React.PropTypes.object,
+  travelMode: React.PropTypes.number
 };
 
 PhotoPage.displayName = 'PhotoPage';

@@ -730,6 +730,7 @@ class App extends Mediator {
                 hasSavedRoute={this.state.savedRoute} 
                 onClickSavedRouteShowButton={this.showMapPage} 
                 photoSearchConfig={appConfig.photoSearch} 
+                travelMode={this.state.travelMode} 
               />
               <PhotoPage 
                 visibility={this.state.photoPage2Visibility} 
@@ -742,6 +743,7 @@ class App extends Mediator {
                 hasSavedRoute={this.state.savedRoute} 
                 onClickSavedRouteShowButton={this.showMapPage}  
                 photoSearchConfig={appConfig.photoSearch2} 
+                travelMode={this.state.travelMode} 
               />
               <MapPage 
                 visibility={this.state.mapPageVisibility} 
@@ -757,7 +759,7 @@ class App extends Mediator {
                 yorimichiAlertVisibility={this.state.mapPageYorimichiAlertVisibility} 
                 onClickYorimichiYesButton={this.onClickYorimichiYesButton} 
                 onClickYorimichiNoButton={this.hideYorimichiAlert} 
-                onClickLocationButton={this.setMapviewToLocation}
+                onClickLocationButton={this.setMapviewToLocation} 
               />
               <SpotFormPage 
                 visibility={this.state.spotformPageVisibility} 
