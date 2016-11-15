@@ -1873,7 +1873,7 @@ console.log('appConfig geolocation: ', demo);
 
 var appConfig = exports.appConfig = {
   oauth: {
-    appLogin: true, // for Esri World Route Service
+    appLogin: false, // for Esri World Route Service
     appid: 'kJb12p62K5gGwjNx' // ArcGIS for Developers で発行したアプリID: https://developers.arcgis.com/applications/
   },
   ui: {
@@ -1925,8 +1925,8 @@ var appConfig = exports.appConfig = {
       className: 'route-path'
     },
     bufferRadius: 250, // ルート バッファー半径 (寄り道スポット、くじらんの検索に使用)
-    //endpointUrl: '//route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World' // ルート検索サービス エンドポイント URL
-    endpointUrl: '//utility.arcgis.com/usrsvcs/appservices/GfNovy4yk5xdJ9b4/rest/services/World/Route/NAServer/Route_World'
+    endpointUrl: '//route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World' // ルート検索サービス エンドポイント URL
+    //endpointUrl: '//utility.arcgis.com/usrsvcs/appservices/GfNovy4yk5xdJ9b4/rest/services/World/Route/NAServer/Route_World'
   },
   spotformApp: {
     url: '//www.arcgis.com/apps/GeoForm/index.html?appid=9dd92be784fe4f3f8d5a70624781e3d1' // 写真スポット投稿フォーム アプリ URL
