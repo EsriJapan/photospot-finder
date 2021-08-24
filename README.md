@@ -1,6 +1,6 @@
 # [Photospot Finder (MUROSARU)](https://esrijapan.github.io/photospot-finder/?demo)
 
-室蘭市の[2016年 企業・団体対抗 観光ハッカソン](https://ja.localwiki.org/mr/%E4%BC%81%E6%A5%AD%E3%83%BB%E5%9B%A3%E4%BD%93%E5%AF%BE%E6%8A%97%E3%83%8F%E3%83%83%E3%82%AB%E3%82%BD%E3%83%B3)向けに作成したアプリです。
+室蘭市の2016年11月14日に開催された[企業・団体対抗 観光ハッカソン](https://ja.localwiki.org/mr/%E4%BC%81%E6%A5%AD%E3%83%BB%E5%9B%A3%E4%BD%93%E5%AF%BE%E6%8A%97%E3%83%8F%E3%83%83%E3%82%AB%E3%82%BD%E3%83%B3)向けに作成したアプリです。
 
 MUROSARU (ムロサル) とは、北海道の方言にある「書かさる」、「押ささる」などの「〜さる」といった意思に反して行われるというニュアンスの言葉からもじった造語です。このアプリのコンセプトは「寄り道」なので、目的地でないにも関わらず、つい引き寄せられてしまうという意味合いを込めています。
 
